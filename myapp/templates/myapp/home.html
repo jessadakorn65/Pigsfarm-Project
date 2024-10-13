@@ -1,12 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>หน้าแรก</title>
+    <title>Welcome to the Pig Farm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #FAFAFA; /* สีพื้นหลังขาว */
+        }
+
+        .hero {
+            background-color: #8BC34A; /* สีเขียวธรรมชาติ */
+            padding: 50px 20px;
+            text-align: center;
+            color: #FFFFFF;
+            background-image: url('https://cdn.pixabay.com/photo/2016/11/21/13/38/pigs-1849727_960_720.jpg');
+            background-size: cover;
+            background-blend-mode: multiply;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .btn-primary {
+            background-color: #FFC1CC; /* สีชมพู */
+            color: #FFFFFF;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #FF9AA2; /* สีชมพูเข้มขึ้นเมื่อ hover */
+            transform: scale(1.05); /* ขยายขึ้นเล็กน้อย */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero h1 {
+            animation: slideInLeft 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .content {
+            padding: 30px;
+            background-color: #FFFFFF;
+            color: #555;
+            text-align: center;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .arrow {
+            font-size: 32px;
+            animation: bounce 1.5s infinite;
+            margin-top: 20px;
+            color: #FFC1CC;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>ยินดีต้อนรับสู่หน้าแรก</h1>
-    <a href="{% url 'login' %}">ไปที่หน้าเข้าสู่ระบบ</a>
+    <div class="hero">
+        <h1 class="text-5xl font-bold mb-4">ยินดีต้อนรับสู่ฟาร์มสุกรของเรา</h1>
+        <p class="text-lg mb-4">ฟาร์มของเรามีการดูแลสุกรด้วยความใส่ใจ และการบริการที่ดีที่สุด</p>
+        <a href="{% url 'login' %}" class="btn-primary">เข้าสู่ระบบ</a>
+        <div class="arrow">⬇</div> <!-- ลูกศรเลื่อนลง -->
+    </div>
+
+    <div class="content">
+        <h2 class="text-3xl font-semibold mb-2">เกี่ยวกับเรา</h2>
+        <p class="mb-4">ฟาร์มของเรามีประวัติยาวนานในการเลี้ยงสุกรและให้บริการที่มีคุณภาพสูง</p>
+        <a href="#" class="btn-primary">ติดต่อเรา</a>
+    </div>
 </body>
+
 </html>
