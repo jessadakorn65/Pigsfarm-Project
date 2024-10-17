@@ -1,2 +1,57 @@
-<h1>Welcome, Employee!</h1>
-<p>This is your dashboard.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div class="flex min-h-screen bg-gray-100">
+      <!-- Sidebar -->
+      <div class="w-1/4 bg-green-500 p-4 text-white">
+        <div class="text-center">
+          <h1 class="mt-4 text-xl font-bold">ระบบจัดการฟาร์มสุกร</h1>
+        </div>
+        <nav class="mt-8">
+          <ul>
+            <li class="mt-4">
+              <a href="#" class="block py-2 px-4 bg-green-600 rounded-md text-center">โปรไฟล์ของฉัน</a>
+            </li>
+            <li class="mt-4">
+              <a href="#" class="block py-2 px-4 bg-green-600 rounded-md text-center">การจัดการโปรไฟล์</a>
+            </li>
+            <li class="mt-4">
+              <a href="#" class="block py-2 px-4 bg-green-600 rounded-md text-center">ออกจากระบบ</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    
+      <!-- Main Content -->
+      <div class="w-3/4 p-8">
+        <!-- Box 1 -->
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+          <h2 class="text-red-600 text-xl font-semibold">ดูประวัติข้อมูลสุกรรายเดือน</h2>
+          <p class="mt-2 text-gray-600">ดูข้อมูลสุกรตามเดือน</p>
+          <button class="mt-4 bg-green-500 text-white py-2 px-4 rounded">ยืนยัน</button>
+        </div>
+        
+        <!-- Box 2 -->
+        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+          <h2 class="text-red-600 text-xl font-semibold">ดูโปรไฟล์เจ้าของฟาร์ม</h2>
+          <p class="mt-2 text-gray-600">ดูข้อมูลเจ้าของฟาร์ม</p>
+          <button class="mt-4 bg-green-500 text-white py-2 px-4 rounded">ยืนยัน</button>
+        </div>
+        
+        <!-- Box 3 -->
+        <div class="bg-white shadow-md rounded-lg p-6">
+          <h2 class="text-red-600 text-xl font-semibold">แก้ไขโปรไฟล์ตัวเอง</h2>
+          <p class="mt-2 text-gray-600">ปรับเปลี่ยนข้อมูลโปรไฟล์ตนเอง</p>
+          <button class="mt-4 bg-green-500 text-white py-2 px-4 rounded">ยืนยัน</button>
+        </div>
+      </div>
+    </div>
+    
+</body>
+</html>
