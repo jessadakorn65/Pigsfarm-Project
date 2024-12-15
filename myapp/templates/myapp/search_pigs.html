@@ -1,0 +1,16 @@
+<form method="get" action="">
+    <input type="text" name="q" placeholder="ค้นหาหมายเลขสุกร" />
+    <button type="submit">ค้นหา</button>
+</form>
+
+{% if pigs %}
+    <ul>
+        {% for pig in pigs %}
+            <li>
+                <a href="{% url 'insemination_record' pig.id %}">{{ pig.pig_id }} - {{ pig.status }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>ไม่พบข้อมูลสุกร</p>
+{% endif %}

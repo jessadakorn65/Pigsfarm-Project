@@ -1,0 +1,7 @@
+<h2>บันทึกข้อมูลการผสมสำหรับ {{ pig.pig_id }}</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">บันทึกข้อมูล</button>
+</form>
+<a href="{% url 'pig_detail' pig.id %}">ดูข้อมูลการผสม</a>

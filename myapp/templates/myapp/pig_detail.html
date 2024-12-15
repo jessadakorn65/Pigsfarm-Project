@@ -1,0 +1,26 @@
+<h2>ข้อมูลการผสมของสุกร {{ pig.pig_id }}</h2>
+<table>
+    <tr>
+        <th>วันที่ผสม</th>
+        <th>รหัสน้ำเชื้อ</th>
+        <th>ผลการผสม</th>
+        <th>หมายเหตุ</th>
+        <th>รูปภาพ</th>
+    </tr>
+    {% for insemination in inseminations %}
+    <tr>
+        <td>{{ insemination.insemination_date }}</td>
+        <td>{{ insemination.semen_id }}</td>
+        <td>{{ insemination.insemination_result }}</td>
+        <td>{{ insemination.notes }}</td>
+        <td>
+            {% if insemination.img %}
+                <img src="{{ insemination.img.url }}" alt="รูปภาพ" width="100px">
+            {% else %}
+                ไม่มีรูปภาพ
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'search_pigs' %}">กลับไปหน้าค้นหา</a>

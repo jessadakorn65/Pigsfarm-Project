@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 
+
 # ฟังก์ชันเข้าสู่ระบบ
 def custom_login(request):
     if request.method == "POST":
@@ -62,3 +63,35 @@ def register(request):
 # ฟังก์ชันแสดงหน้าเข้าสู่ระบบ (สำหรับหน้าเข้าสู่ระบบปกติ)
 def login_view(request):
     return render(request, 'myapp/login.html')  # เส้นทางหน้าเข้าสู่ระบบ
+#-------------------------------------------------------------------------------------------------------------------------------------------------
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Pig, Insemination
+from .forms import InseminationForm
+
+# ฟังก์ชันค้นหาสุกร
+def search_pigs(request):
+    query = request.GET.get('q')  # รับคีย์เวิร์ดที่กรอกในช่องค้นหา
+    pigs = None
+    if query:
+        pigs = Pig.objects.filter(pig_id__icontains=query)
+    return render(request, 'myapp/search_pigs.html', {'pigs': pigs})
+
+# ฟังก์ชันบันทึกข้อมูลการผสม
+def insemination_record(request, pig_id):
+    pig = get_object_or_404(Pig, id=pig_id)
+    if request.method == 'POST':
+        form = InseminationForm(request.POST, request.FILES)
+        if form.is_valid():
+            insemination = form.save(commit=False)
+            insemination.pig = pig
+            insemination.save()
+            return redirect('pig_detail', pig_id=pig.id)
+    else:
+        form = InseminationForm()
+    return render(request, 'myapp/insemination_record.html', {'form': form, 'pig': pig})
+
+# ฟังก์ชันแสดงข้อมูลการผสมของสุกรตัวนั้น
+def pig_detail(request, pig_id):
+    pig = get_object_or_404(Pig, id=pig_id)
+    inseminations = pig.insemination_set.all()
+    return render(request, 'myapp/pig_detail.html', {'pig': pig, 'inseminations': inseminations})

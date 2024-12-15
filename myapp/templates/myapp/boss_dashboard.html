@@ -1,340 +1,87 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ระบบจัดการฟาร์มสำหรับสุกร">
-    <title>Full Page Scroll with Navbar</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ART</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/3.1.2/fullpage.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-    <style>
-        /* General styles for the sections */
-        section {
-            text-align: center;
-            font-size: 40px;
-            color: white;
-        }
-        #section1 { background-color: #f0f0f0; }
-        #section2 { background-color:#f0f0f0; }
-        #section3 { background-color: #f0f0f0; }
-
-        /* Navbar styles */
-        body {
-            transition: right 0.2s;
-            font-family: Arial, sans-serif;
-        }
-        .nav-screen {
-            position: fixed;
-            top: 0;
-            right: -285px;
-            width: 285px;
-            height: 100%;
-            background: #333;
-            color: white;
-            transition: right 0.2s;
-            z-index: 1000;
-            padding-top: 80px; /* Space for top navbar */
-        }
-        .nav-links a {
-            display: block;
-            padding: 15px;
-            color: white;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        .nav-links a:hover {
-            background: #575757;
-        }
-        .fa-bars, .fa-times {
-            cursor: pointer;
-            font-size: 30px;
-            color: white;
-        }
-        .fa-bars {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1001;
-        }
-        .fa-times {
-            position: absolute;
-            top: 20px;
-            left: 230px;
-            z-index: 1001;
-        }
-
-        /* Styles for the top navbar */
-        .top-navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            background-color: #4CAF50;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            z-index: 999;
-        }
-
-        /* Section styles */
-        .section-content {
-            margin-top: 80px; /* Space below top navbar */
-            padding: 20px;
-        }
-
-        .card {
-            background-color: #fff;
-            padding: 10px; /* Adjusted padding */
-            margin: 20px auto; /* Centered card with auto margins */
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
-            width: 90%; /* Set a max width */
-            max-width: 600px; /* Adjusted max width */
-            margin-top: 10px;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .swiper-container {
-            margin-top: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
+<body class="font-sans bg-gray-100">
 
-    <!-- Top navbar with title -->
-    <nav class="top-navbar">
-        ระบบจัดการฟาร์ม
+<header class="bg-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+        <img src="https://i.ibb.co/qkThxX8/logo.png" alt="logo" class="h-10">
+        <span class="text-xl font-semibold">ART</span>
+    </div>
+    <div class="flex items-center space-x-5">
+        <ul class="flex space-x-5 text-gray-700">
+            <li><a href="#"><i class="fa-solid fa-list"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-envelope"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i></a></li>
+        </ul>
+        <div class="relative">
+            <button class="flex items-center space-x-2 cursor-pointer">
+                <img src="https://picsum.photos/id/1074/50" alt="profile" class="h-12 w-12 rounded-full">
+                <span>jessadakorn fram</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <ul class="absolute right-0 hidden mt-2 bg-white shadow-lg rounded-md w-48 text-gray-800">
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Home</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Blog</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Contact</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Other</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Photo</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<div class="flex">
+    <nav class="bg-gray-800 text-white w-64 p-4 h-screen">
+        <ul class="space-y-3">
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-circle"></i><span>Dashboard</span></a></li>
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลการผสม</span></a></li>
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-cogs"></i><span>UI/Kit</span></a></li>
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-book"></i><span>บันทึกข้อมูลลูกสุกร</span></a></li>
+            <li><a href="{% url 'search_pigs' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span></a></li>
+            <li><a href="{% url 'home' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span></a></li>
+        </ul>
     </nav>
 
-    <!-- Burger menu icon to open the sidebar -->
-    <div class="fa-bars">☰</div>
+    <div class="flex-1 p-6">
+        <div class="flex justify-between items-center">
+            <p class="text-gray-600">Welcome to ART</p>
+            <h2 class="text-xl font-medium">Search for your project</h2>
+        </div>
 
-    <!-- Sidebar with links -->
-    <div class="nav-screen">
-        <div class="fa-times">✖</div>
-        <div class="nav-links">
-            <a href="#section1">ข่าวสาร</a>
-            <a href="#section2">เกี่ยวกับ</a>
-            <a href="#section3">ติดต่อ</a>
-            <a href="{% url 'logout' %}" class="text-red-500 hover:text-red-700">ออกจากระบบ</a>
+        <div class="flex items-center relative mt-4">
+            <input id="site-search" type="search" class="w-72 py-2 px-4 border-2 border-gray-300 rounded-md pl-10" placeholder="Search" aria-label="Search">
+            <!-- เปลี่ยนไอคอนเป็น Font Awesome -->
+            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
 
+        <div class="grid grid-cols-4 gap-4 mt-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 1</div>
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 2</div>
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 3</div>
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 4</div>
         </div>
     </div>
+</div>
 
-    <!-- FullPage.js content -->
-    <div id="fullpage">
-        <div class="section" id="section1">
-            <div class="section-content">
-                <h2 class="text-red-500 text-xl font-bold">ข่าวสารแนะนำ</h2>
-                <div class="swiper-container">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="bg-red-600 h-48 flex items-center justify-center text-white text-2xl">
-                                <img src="https://cdn.pixabay.com/photo/2018/10/12/10/30/piglet-3741877_1280.jpg" alt="รูปที่ต้องการแสดง" class="w-full h-full object-cover rounded-lg">
-                            </div>
-                        </div>                        
-                        <div class="swiper-slide">
-                            <div class="bg-red-600 h-48 flex items-center justify-center text-white text-2xl">
-                                <img src="https://media.istockphoto.com/id/140462837/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B8%99%E0%B9%88%E0%B8%B2%E0%B8%A3%E0%B8%B1%E0%B8%81%E0%B8%9E%E0%B8%B4%E0%B8%87%E0%B8%A3%E0%B8%B2%E0%B8%A7%E0%B9%80%E0%B8%95%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B8%82%E0%B8%AD%E0%B8%87%E0%B9%80%E0%B8%82%E0%B8%B2.jpg?s=2048x2048&w=is&k=20&c=JAVe7U5f7sRaGbOtinhfnlUv1lbwQXWQ2V8MeX-_IHo=" 
-                                alt="รูปที่ต้องการแสดง" class="w-full h-full object-cover rounded-lg">
-                            </div>
-                        </div>
-                        
-                        <div class="swiper-slide">
-                            <div class="bg-red-600 h-48 flex items-center justify-center text-white text-2xl">
-                                <img src="https://media.istockphoto.com/id/956025942/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%A5%E0%B8%B9%E0%B8%81%E0%B8%AB%E0%B8%A1%E0%B8%B9%E0%B9%81%E0%B8%A3%E0%B8%81%E0%B9%80%E0%B8%81%E0%B8%B4%E0%B8%94%E0%B8%9A%E0%B8%99%E0%B8%AB%E0%B8%8D%E0%B9%89%E0%B8%B2%E0%B8%AA%E0%B8%B5%E0%B9%80%E0%B8%82%E0%B8%B5%E0%B8%A2%E0%B8%A7%E0%B9%83%E0%B8%99%E0%B8%A4%E0%B8%94%E0%B8%B9%E0%B9%83%E0%B8%9A%E0%B9%84%E0%B8%A1%E0%B9%89%E0%B8%9C%E0%B8%A5%E0%B8%B4%E0%B9%83%E0%B8%99%E0%B8%9F%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%A1.jpg?s=2048x2048&w=is&k=20&c=0JtJlKnBR0ir_7x_Egt8KCy1L16fIkK-84C_KHu6UVY=
-                                " alt="รูปที่ต้องการแสดง" class="w-full h-full object-cover rounded-lg">
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
-                </div>
+<script>
+    document.querySelector('.main-top_button').addEventListener('click', function() {
+        document.querySelector('.menu-open').classList.toggle('hidden');
+    });
 
-                <!-- ระบบจัดการฟาร์ม -->
-                <h2 class="text-red-500 text-xl font-bold mt-6"></h2>
-                <div class="card">
-                    <h3 class="text-red-500 text-lg font-bold">ระบบจัดการการผสม</h3>
-                    <p class="mt-2">กรอกข้อมูลเกี่ยวกับการผสมพันธุ์ของสุกรคุณ</p>
-                </div>
-                <div class="card">
-                    <h3 class="text-red-500 text-lg font-bold">ซัพพลอตสุกร</h3>
-                    <p class="mt-2">อัพเดตสุกรที่คุณเลี้ยงได้ที่นี่พร้อมรายละเอียด</p>
-                </div>
-                <div class="card">
-                    <h3 class="text-red-500 text-lg font-bold">ดูรายการการจัดการฟาร์ม</h3>
-                    <p class="mt-2">แสดงข้อมูลเกี่ยวกับการจัดการฟาร์มสุกรของคุณ</p>
-                </div>
-            </div>
-        </div>
-        <!--ส่วนที่2-->
-        <div class="section" id="section2">
-            <div class="section-content">
+    // JavaScript for handling the search functionality
+    const searchInput = document.getElementById('site-search');
+    searchInput.addEventListener('input', function() {
+        console.log('Searching for:', searchInput.value);
+    });
+</script>
 
-                <div class="flex mt-4">
-                    <!-- Left Section -->
-                    <div class="w-1/2 p-4">
-                        <h2 class="text-xl font-bold mb-4">การจัดการการผสมเทียม</h2>
-                        <div class="bg-green-200 p-4 rounded-lg">
-                            <img src="https://example.com/pig-image.jpg" alt="ภาพสุกร" class="w-full h-48 object-cover rounded-lg mb-4">
-                            <p class="text-black font-bold">ไอดีสุกร: E2233</p>
-                            <p class="text-black">โซนสุกร: A</p>
-                        </div>
-                    </div>
-                
-                    <!-- Right Section -->
-                    <div class="w-1/2 p-4 bg-gray-50 rounded-lg">
-                        <form action="" method="post">
-                            <!-- รหัสหมู -->
-                            <div class="mb-4">
-                                <label for="pig_id" class="block text-gray-700">รหัสหมู</label>
-                                <input type="text" id="pig_id" name="pig_id" class="w-full p-2 border rounded-lg">
-                            </div>
-                
-                            <!-- วันที่ผสมเทียม -->
-                            <div class="mb-4">
-                                <label for="insemination_date" class="block text-gray-700">วันที่ผสมเทียม</label>
-                                <input type="date" id="insemination_date" name="insemination_date" class="w-full p-2 border rounded-lg">
-                            </div>
-                
-                            <!-- รหัสน้ำเชื้อ -->
-                            <div class="mb-4">
-                                <label for="semen_id" class="block text-gray-700">รหัสน้ำเชื้อ</label>
-                                <input type="text" id="semen_id" name="semen_id" class="w-full p-2 border rounded-lg">
-                            </div>
-                
-                            <!-- อัพโหลดรูป -->
-                            <div class="mb-4">
-                                <label for="upload_file" class="block text-gray-700">อัพโหลดรูป</label>
-                                <input type="file" id="upload_file" name="upload_file" class="w-full p-2 border rounded-lg">
-                            </div>
-                
-                            <!-- ปุ่มบันทึก -->
-                            <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-700">
-                                บันทึกข้อมูลและคำนวณวันขยาย
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                
-            </div>
-        </div>
-        <div class="section" id="section3">
-            <div class="section-content">
-                <!-- หัวข้อ -->
-                <h1 class="text-3xl font-bold text-center text-green-600 mb-8">อัพเดตสุกร</h1>
-                
-                <!-- กล่องค้นหา -->
-                <div class="flex justify-center mb-4">
-                    <input type="text" name="search" class="border border-gray-300 p-2 rounded-l-lg" placeholder="ค้นหาสุกร...">
-                    <button class="bg-green-500 text-white p-2 rounded-r-lg">ค้นหา</button>
-                </div>
-        
-                <!-- ตารางแสดงข้อมูลสุกร -->
-                <div class="bg-white shadow-lg rounded-lg p-5">
-                    <table class="min-w-full table-auto text-center">
-                        <thead>
-                            <tr class="bg-green-500 text-white">
-                                <th class="p-3">รหัสสุกร</th>
-                                <th class="p-3">วันที่ผสม</th>
-                                <th class="p-3">วันคาด</th>
-                                <th class="p-3">สถานะ</th>
-                                <th class="p-3">อัตราการ</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="bg-gray-200">
-                                <!-- ข้อมูลจากฐานข้อมูล -->
-                                <td class="p-3">{{ pig.pig_id }}</td>
-                                <td class="p-3">{{ pig.breeding_date }}</td>
-                                <td class="p-3">{{ pig.expected_delivery_date }}</td>
-                                <td class="p-3">{{ pig.status }}</td>
-                                <td class="p-3">
-                                    <button class="bg-green-500 text-white px-4 py-2 rounded-lg">อัพเดต</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-        
-                <!-- ฟอร์มอัพเดตข้อมูลสุกร -->
-                <div class="mt-8 bg-white shadow-lg rounded-lg p-5">
-                    <h2 class="text-2xl font-bold mb-4">อัพเดตสุกร</h2>
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="litter_size" class="block text-gray-700">ลูกสุกร</label>
-                            <input type="number" id="litter_size" name="litter_size" class="border border-gray-300 p-2 w-full rounded-lg" value="{{ pig.litter_size }}">
-                        </div>
-                        <div class="mb-4">
-                            <label for="survivors" class="block text-gray-700">ลูกสุกรที่เสียชีวิต</label>
-                            <input type="number" id="survivors" name="survivors" class="border border-gray-300 p-2 w-full rounded-lg" value="{{ pig.survivors }}">
-                        </div>
-                        <div class="flex justify-between">
-                            <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg hover:bg-green-700">บันทึก</button>
-                            <a href="{% url 'home' %}" class="w-full bg-yellow-500 text-white p-3 rounded-lg text-center ml-2 hover:bg-yellow-700">หน้าหลัก</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-
-    <script>
-        $(document).ready(function () {
-            $(".fa-bars").click(function () {
-                $(".nav-screen").animate({ right: "0px" }, 200);
-                $("body").animate({ right: "285px" }, 200);
-            });
-            $(".fa-times").click(function () {
-                $(".nav-screen").animate({ right: "-285px" }, 200);
-                $("body").animate({ right: "0px" }, 200);
-            });
-
-            // Smooth scrolling
-            $('a[href^="#"]').on('click', function(event) {
-                event.preventDefault();
-                const target = this.hash;
-                $('html, body').animate({
-                    scrollTop: $(target).offset().top
-                }, 800);
-            });
-
-            new fullpage('#fullpage', {
-                navigation: true,
-                scrollBar: true,
-                afterLoad: function (origin, destination, direction) {
-                    if (destination.index === 1) {
-                        // Additional functionality for Section 1
-                    }
-                }
-            });
-        });
-    </script>
-
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    <script>
-        const swiper = new Swiper('.swiper-container', {
-            loop: true,
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            autoplay: {
-                delay: 3000,
-            },
-        });
-    </script>
 </body>
 </html>

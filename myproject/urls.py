@@ -5,3 +5,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('myapp.urls')),  # รวม urls ของ myapp
 ]
+
+#---------------------------------------------------------
