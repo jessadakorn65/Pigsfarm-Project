@@ -1,7 +1,96 @@
-<h2>บันทึกข้อมูลการผสมสำหรับ {{ pig.pig_id }}</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">บันทึกข้อมูล</button>
-</form>
-<a href="{% url 'pig_detail' pig.id %}">ดูข้อมูลการผสม</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="bg-gray-50 min-h-screen py-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <!-- หัวเรื่อง -->
+          <h2 class="text-2xl font-semibold text-gray-800 text-center mb-6">
+            บันทึกข้อมูลการผสมสำหรับ <span class="text-blue-600">{{ pig.pig_id }}</span>
+          </h2>
+      
+          <!-- กรอบฟอร์มและรายการหมู -->
+          <div class="flex space-x-8">
+            <!-- รายการหมู -->
+            <div class="w-1/3">
+              <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">รายการสุกร</h3>
+                {% if pigs %}
+                  <ul class="space-y-4">
+                    {% for pig in pigs %}
+                      <li class="border-b py-2">
+                        <a href="{% url 'insemination_record' pig.id %}" class="text-blue-600 hover:underline">
+                          รหัสสุกร: {{ pig.pig_id }} - สถานะ: {{ pig.status }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="text-gray-500">ไม่พบข้อมูลสุกร</p>
+                {% endif %}
+              </div>
+            </div>
+      
+            <!-- ฟอร์มบันทึกข้อมูล -->
+            <div class="w-2/3">
+              <div class="bg-white shadow-md rounded-lg p-6">
+                <!-- ปุ่มย้อนกลับ -->
+                <div class="mb-4">
+                  <button
+                    onclick="window.history.back()"
+                    class="px-6 py-3 bg-gray-600 text-white font-semibold rounded-md shadow hover:bg-gray-700 transition duration-200"
+                  >
+                    ย้อนกลับ
+                  </button>
+                </div>
+      
+                <form method="post" enctype="multipart/form-data" class="space-y-4">
+                  {% csrf_token %}
+                  
+                  <!-- ช่องกรอกข้อมูล -->
+                  <div class="space-y-4">
+                    {{ form.as_p|safe }}
+                    <!-- ช่องกรอก -->
+                    <div class="space-y-2">
+                      <input 
+                        type="text" 
+                        name="field_name"
+                        placeholder="กรอกข้อมูลที่นี่"
+                        class="w-full p-4 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm transition duration-300"
+                      />
+                    </div>
+                  </div>
+      
+                  <!-- ปุ่มบันทึก -->
+                  <div class="text-center">
+                    <button
+                      type="submit"
+                      class="px-6 py-3 bg-green-600 text-white font-semibold rounded-md shadow hover:bg-green-700 transition duration-200"
+                    >
+                      บันทึกข้อมูล
+                    </button>
+                  </div>
+                </form>
+      
+                <!-- ลิงก์สำหรับดูข้อมูล -->
+                <div class="text-center mt-6">
+                  <a
+                    href="{% url 'pig_detail' pig.id %}"
+                    class="text-blue-600 font-semibold hover:underline"
+                  >
+                    ดูข้อมูลการผสม
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+            
+</body>
+</html>

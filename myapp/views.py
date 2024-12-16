@@ -90,8 +90,10 @@ def insemination_record(request, pig_id):
         form = InseminationForm()
     return render(request, 'myapp/insemination_record.html', {'form': form, 'pig': pig})
 
-# ฟังก์ชันแสดงข้อมูลการผสมของสุกรตัวนั้น
+from django.shortcuts import render, get_object_or_404
+from .models import Pig, Insemination
+
 def pig_detail(request, pig_id):
     pig = get_object_or_404(Pig, id=pig_id)
-    inseminations = pig.insemination_set.all()
+    inseminations = Insemination.objects.filter(pig=pig)
     return render(request, 'myapp/pig_detail.html', {'pig': pig, 'inseminations': inseminations})

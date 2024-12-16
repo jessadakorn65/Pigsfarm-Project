@@ -1,16 +1,82 @@
-<form method="get" action="">
-    <input type="text" name="q" placeholder="ค้นหาหมายเลขสุกร" />
-    <button type="submit">ค้นหา</button>
-</form>
-
-{% if pigs %}
-    <ul>
-        {% for pig in pigs %}
-            <li>
-                <a href="{% url 'insemination_record' pig.id %}">{{ pig.pig_id }} - {{ pig.status }}</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>ไม่พบข้อมูลสุกร</p>
-{% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="bg-gray-50 min-h-screen py-10">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+          <!-- หัวเรื่อง -->
+          <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+            ค้นหาและจัดการข้อมูลสุกร
+          </h1>
+          
+          <!-- ฟอร์มค้นหา -->
+          <form method="get" action="" class="flex items-center space-x-4 mb-8 max-w-lg mx-auto">
+            <input
+              type="text"
+              name="q"
+              placeholder="ค้นหาหมายเลขสุกร"
+              class="flex-grow p-3 border rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+            />
+            <button
+              type="submit"
+              class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700 transition duration-200"
+            >
+              ค้นหา
+            </button>
+          </form>
+      
+          <!-- ผลการค้นหา -->
+          {% if pigs %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {% for pig in pigs %}
+                <!-- การ์ดสุกร -->
+                <div class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                  <!-- รูปภาพสุกร -->
+                  <div class="aspect-square bg-gray-100 rounded-t-lg overflow-hidden">
+                    {% if pig.img %}
+                      <img
+                        src="{{ pig.img.url }}"
+                        alt="ภาพสุกร {{ pig.pig_id }}"
+                        class="object-cover w-full h-full"
+                      />
+                    {% else %}
+                      <div class="flex items-center justify-center h-full text-gray-500">
+                        ไม่มีภาพ
+                      </div>
+                    {% endif %}
+                  </div>
+      
+                  <!-- ข้อมูลสุกร -->
+                  <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">
+                      รหัสสุกร: {{ pig.pig_id }}
+                    </h3>
+                    <p class="text-sm text-gray-600">สถานะ: {{ pig.status }}</p>
+                    <p class="text-sm text-gray-600">โซน: {{ pig.zone }}</p>
+                  </div>
+      
+                  <!-- ปุ่มจัดการ -->
+                  <div class="p-4 border-t bg-gray-50">
+                    <a
+                      href="{% url 'insemination_record' pig.id %}"
+                      class="block text-center px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700"
+                    >
+                      บันทึกการผสม
+                    </a>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-center text-gray-500">ไม่พบข้อมูลสุกร</p>
+          {% endif %}
+        </div>
+      </div>
+      
+</body>
+</html>
