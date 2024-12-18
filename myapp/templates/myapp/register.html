@@ -4,18 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@1.9.6/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex items-center justify-center min-h-screen bg-gray-100">
-    <div class="bg-white bg-opacity-80 backdrop-blur-lg rounded-lg shadow-lg p-8 w-96">
-        <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
+<body class="min-h-screen bg-gradient-to-br from-green-300 via-blue-400 to-purple-500 flex items-center justify-center">
+    <!-- Card Container -->
+    <div class="bg-white bg-opacity-90 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-96 transform transition duration-500 hover:scale-105">
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-extrabold text-gray-800">Create Account</h2>
+            <p class="text-gray-500">Join us and get started!</p>
+        </div>
+        
+        <!-- Form -->
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}  <!-- แสดงฟอร์ม -->
-            <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition">Register</button>
+            <!-- Form Fields -->
+            <div class="space-y-4">
+                {{ form.as_p }}
+            </div>
+            <!-- Submit Button -->
+            <button type="submit" 
+                class="mt-4 w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">
+                Register
+            </button>
         </form>
-        <p class="text-center mt-4">Already have an account? <a href="{% url 'login' %}" class="text-blue-500 hover:underline">Login here</a></p>
+        
+        <!-- Footer -->
+        <p class="text-center mt-6 text-gray-600">
+            Already have an account? 
+            <a href="{% url 'login' %}" class="text-blue-500 font-medium hover:underline">
+                Login here
+            </a>
+        </p>
     </div>
-    
 </body>
 </html>

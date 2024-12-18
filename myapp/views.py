@@ -97,3 +97,23 @@ def pig_detail(request, pig_id):
     pig = get_object_or_404(Pig, id=pig_id)
     inseminations = Insemination.objects.filter(pig=pig)
     return render(request, 'myapp/pig_detail.html', {'pig': pig, 'inseminations': inseminations})
+
+
+from django.shortcuts import render, redirect
+from .forms import PigForm
+
+# เพิ่มหมูใหม่
+def add_pig(request):
+    if request.method == 'POST':
+        form = PigForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('search_pigs')  # กลับไปที่หน้าค้นหาหมู
+    else:
+        form = PigForm()
+    return render(request, 'myapp/add_pig.html', {'form': form})
+
+
+def pig_list(request):
+    pigs = Pig.objects.all()  # ดึงข้อมูลสุกรทั้งหมดจากฐานข้อมูล
+    return render(request, 'myapp/pig_list.html', {'pigs': pigs})

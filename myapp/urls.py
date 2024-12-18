@@ -12,8 +12,8 @@ urlpatterns = [
     path('search/', views.search_pigs, name='search_pigs'),
     path('insemination/<int:pig_id>/', views.insemination_record, name='insemination_record'),
     path('pig/<int:pig_id>/', views.pig_detail, name='pig_detail'),
-
-    
+    path('add_pig/', views.add_pig, name='add_pig'),
+    path('pigs_list/', views.pig_list, name='pig_list'),
 ]
 
 

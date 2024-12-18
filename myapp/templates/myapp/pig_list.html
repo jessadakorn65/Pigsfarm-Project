@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการสุกร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+
+    <!-- หัวข้อ -->
+    <div class="container mx-auto px-4 py-10">
+        <h1 class="text-3xl font-bold text-center mb-8">รายการสุกรทั้งหมด</h1>
+
+        <!-- ตรวจสอบว่ามีข้อมูลหมูหรือไม่ -->
+        {% if pigs %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for pig in pigs %}
+                    <!-- การ์ดสุกร -->
+                    <div class="bg-white border rounded-lg shadow hover:shadow-lg transition duration-200">
+                        <!-- รูปภาพ -->
+                        <div class="aspect-square bg-gray-100 rounded-t-lg overflow-hidden">
+                            {% if pig.img %}
+                                <img src="{{ pig.img.url }}" alt="สุกร {{ pig.pig_id }}" class="object-cover w-full h-full">
+                            {% else %}
+                                <div class="flex items-center justify-center h-full text-gray-500">ไม่มีภาพ</div>
+                            {% endif %}
+                        </div>
+                        <!-- ข้อมูลสุกร -->
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold">รหัสสุกร: {{ pig.pig_id }}</h3>
+                            <p class="text-sm text-gray-600">สถานะ: {{ pig.status }}</p>
+                            <p class="text-sm text-gray-600">โซน: {{ pig.zone }}</p>
+                        </div>
+                        <!-- ปุ่มบันทึกการผสม -->
+                        <div class="p-4 border-t bg-gray-50">
+                            <a href="{% url 'insemination_record' pig.id %}" 
+                               class="block text-center bg-green-500 text-white py-2 rounded hover:bg-green-600">
+                                บันทึกการผสม
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center text-gray-500">ไม่พบข้อมูลสุกร</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

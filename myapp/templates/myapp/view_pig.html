@@ -1,0 +1,16 @@
+<h2>ข้อมูลหมู: {{ pig.pig_id }}</h2>
+<p>สถานะ: {{ pig.status }}</p>
+<a href="{% url 'add_insemination' pig.pig_id %}">บันทึกการผสมพันธุ์</a>
+
+<h3>ประวัติการผสมพันธุ์:</h3>
+<ul>
+    {% for insemination in inseminations %}
+        <li>
+            วันที่: {{ insemination.insemination_date }} |
+            ผลลัพธ์: {{ insemination.insemination_result }} |
+            <a href="{% url 'delete_insemination' insemination.inseminations_id %}">ลบ</a>
+        </li>
+    {% empty %}
+        <p>ไม่มีข้อมูลการผสมพันธุ์</p>
+    {% endfor %}
+</ul>

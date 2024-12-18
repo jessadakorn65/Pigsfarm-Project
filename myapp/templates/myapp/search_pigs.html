@@ -3,19 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ART - ค้นหาและจัดการข้อมูลสุกร</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
-    <div class="bg-gray-50 min-h-screen py-10">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <!-- หัวเรื่อง -->
-          <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+<body class="font-sans bg-gray-100">
+
+<!-- Header -->
+<header class="bg-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+        <img src="https://i.ibb.co/qkThxX8/logo.png" alt="logo" class="h-10">
+        <span class="text-xl font-semibold">ART</span>
+    </div>
+    <div class="flex items-center space-x-5">
+        <ul class="flex space-x-5 text-gray-700">
+            <li><a href="#"><i class="fa-solid fa-list"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-envelope"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i></a></li>
+        </ul>
+        <div class="relative">
+            <button class="flex items-center space-x-2 cursor-pointer">
+                <img src="https://picsum.photos/id/1074/50" alt="profile" class="h-12 w-12 rounded-full">
+                <span>jessadakorn fram</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Main Layout -->
+<div class="flex">
+    <!-- Sidebar -->
+    <nav class="bg-gray-800 text-white w-64 p-4 h-screen">
+        <ul class="space-y-3">
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-circle"></i><span>Dashboard</span></a></li>
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลการผสม</span></a></li>
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-book"></i><span>บันทึกข้อมูลลูกสุกร</span></a></li>
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span></a></li>
+            <li><a href="{% url 'home' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Content Section -->
+    <div class="flex-1 p-6">
+        <!-- Heading -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
             ค้นหาและจัดการข้อมูลสุกร
-          </h1>
-          
-          <!-- ฟอร์มค้นหา -->
-          <form method="get" action="" class="flex items-center space-x-4 mb-8 max-w-lg mx-auto">
+        </h1>
+
+        <!-- Search Form -->
+        <form method="get" action="" class="flex items-center space-x-4 mb-8 max-w-lg mx-auto">
             <input
               type="text"
               name="q"
@@ -28,55 +65,44 @@
             >
               ค้นหา
             </button>
-          </form>
-      
-          <!-- ผลการค้นหา -->
-          {% if pigs %}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {% for pig in pigs %}
-                <!-- การ์ดสุกร -->
-                <div class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                  <!-- รูปภาพสุกร -->
-                  <div class="aspect-square bg-gray-100 rounded-t-lg overflow-hidden">
+        </form>
+
+        <!-- Result Grid -->
+        {% if pigs %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for pig in pigs %}
+            <!-- Card -->
+            <div class="bg-white border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
+                <!-- Image -->
+                <div class="aspect-square bg-gray-100 rounded-t-lg overflow-hidden">
                     {% if pig.img %}
-                      <img
-                        src="{{ pig.img.url }}"
-                        alt="ภาพสุกร {{ pig.pig_id }}"
-                        class="object-cover w-full h-full"
-                      />
+                    <img src="{{ pig.img.url }}" alt="ภาพสุกร {{ pig.pig_id }}" class="object-cover w-full h-full" />
                     {% else %}
-                      <div class="flex items-center justify-center h-full text-gray-500">
+                    <div class="flex items-center justify-center h-full text-gray-500">
                         ไม่มีภาพ
-                      </div>
+                    </div>
                     {% endif %}
-                  </div>
-      
-                  <!-- ข้อมูลสุกร -->
-                  <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-800">
-                      รหัสสุกร: {{ pig.pig_id }}
-                    </h3>
+                </div>
+                <!-- Details -->
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">รหัสสุกร: {{ pig.pig_id }}</h3>
                     <p class="text-sm text-gray-600">สถานะ: {{ pig.status }}</p>
                     <p class="text-sm text-gray-600">โซน: {{ pig.zone }}</p>
-                  </div>
-      
-                  <!-- ปุ่มจัดการ -->
-                  <div class="p-4 border-t bg-gray-50">
-                    <a
-                      href="{% url 'insemination_record' pig.id %}"
-                      class="block text-center px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700"
-                    >
-                      บันทึกการผสม
-                    </a>
-                  </div>
                 </div>
-              {% endfor %}
+                <!-- Action Button -->
+                <div class="p-4 border-t bg-gray-50">
+                    <a href="{% url 'insemination_record' pig.id %}" class="block text-center px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700">
+                        บันทึกการผสม
+                    </a>
+                </div>
             </div>
-          {% else %}
-            <p class="text-center text-gray-500">ไม่พบข้อมูลสุกร</p>
-          {% endif %}
+            {% endfor %}
         </div>
-      </div>
-      
+        {% else %}
+        <p class="text-center text-gray-500">ไม่พบข้อมูลสุกร</p>
+        {% endif %}
+    </div>
+</div>
+
 </body>
 </html>

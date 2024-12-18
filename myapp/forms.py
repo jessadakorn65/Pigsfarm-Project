@@ -41,3 +41,11 @@ class InseminationForm(forms.ModelForm):
         widgets = {
             'insemination_date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+from django import forms
+from .models import Pig
+
+class PigForm(forms.ModelForm):
+    class Meta:
+        model = Pig
+        fields = ['img', 'pig_id', 'address_lock', 'zone', 'status']
