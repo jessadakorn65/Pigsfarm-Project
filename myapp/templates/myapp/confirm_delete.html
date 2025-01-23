@@ -1,6 +1,0 @@
-<h3>คุณต้องการลบข้อมูลการผสมนี้หรือไม่?</h3>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">ลบ</button>
-    <a href="{% url 'search_pigs' %}" class="btn btn-secondary">ยกเลิก</a>
-</form>

@@ -117,3 +117,37 @@ def add_pig(request):
 def pig_list(request):
     pigs = Pig.objects.all()  # ดึงข้อมูลสุกรทั้งหมดจากฐานข้อมูล
     return render(request, 'myapp/pig_list.html', {'pigs': pigs})
+
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Pig, Insemination
+
+@login_required
+def add_insemination(request, pig_id):
+    pig = Pig.objects.get(pig_id=pig_id)
+    if request.method == 'POST':
+        insemination_date = request.POST.get('insemination_date')
+        semen_id = request.POST.get('semen_id')
+        notes = request.POST.get('notes', '')
+
+        # สร้างบันทึกการผสม
+        insemination = Insemination(
+            pig=pig,
+            insemination_date=insemination_date,
+            semen_id=semen_id,
+            notes=notes,
+            recorded_by=request.user  # บันทึกผู้ใช้ที่ล็อกอิน
+        )
+        insemination.save()
+
+        # อัปเดตสถานะหมู
+        pig.status = 'pregnant'
+        pig.save()
+
+        # ส่งข้อความป๊อปอัพ
+        messages.success(request, f"บันทึกสำเร็จ! วันที่คาดว่าจะคลอด: {insemination.expected_delivery_date}")
+
+        return redirect('pig_list')
+
+    return render(request, 'add_insemination.html', {'pig': pig})
