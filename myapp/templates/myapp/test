@@ -56,64 +56,30 @@
             <h2 class="text-xl font-medium">Search for your project</h2>
         </div>
 
-        <!-- ฟอร์มค้นหา -->
-        <form method="GET" action="{% url 'pig_list' %}" class="mb-8 flex items-center justify-center space-x-4">
-            <input 
-                type="text" 
-                name="q" 
-                placeholder="ค้นหาหมู (เช่น หมายเลข ID หรือชื่อ)" 
-                value="{{ request.GET.q|default:'' }}" 
-                class="border rounded-lg px-4 py-2 w-full max-w-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
-            />
-            <button 
-                type="submit" 
-                class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600">
-                ค้นหา
-            </button>
-        </form>
+        <div class="flex items-center relative mt-4">
+            <input id="site-search" type="search" class="w-72 py-2 px-4 border-2 border-gray-300 rounded-md pl-10" placeholder="Search" aria-label="Search">
+            <!-- เปลี่ยนไอคอนเป็น Font Awesome -->
+            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
 
         <div class="max-w-6xl mx-auto p-6">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">รายการหมู</h1>
             
-            
-            <form method="GET" action="{% url 'pig_list' %}" class="mb-6 grid grid-cols-2 gap-4">
+            <!-- ฟอร์มค้นหา -->
+            <form method="GET" action="{% url 'pig_list' %}" class="mb-8 flex items-center justify-center space-x-4">
                 <input 
                     type="text" 
-                    name="pig_id" 
-                    placeholder="ค้นหาด้วยหมายเลข ID" 
-                    value="{{ request.GET.pig_id|default:'' }}" 
-                    class="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-                <input 
-                    type="text" 
-                    name="name" 
-                    placeholder="ค้นหาด้วยชื่อ" 
-                    value="{{ request.GET.name|default:'' }}" 
-                    class="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-                <select 
-                    name="status" 
-                    class="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                    <option value="">สถานะทั้งหมด</option>
-                    <option value="ready" {% if request.GET.status == "ready" %}selected{% endif %}>Ready for Breeding</option>
-                    <option value="waiting" {% if request.GET.status == "waiting" %}selected{% endif %}>Waiting for Delivery</option>
-                </select>
-                <input 
-                    type="text" 
-                    name="zone" 
-                    placeholder="ค้นหาด้วยโซน" 
-                    value="{{ request.GET.zone|default:'' }}" 
-                    class="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    name="q" 
+                    placeholder="ค้นหาหมู (เช่น หมายเลข ID หรือชื่อ)" 
+                    value="{{ request.GET.q|default:'' }}" 
+                    class="border rounded-lg px-4 py-2 w-full max-w-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
                 />
                 <button 
                     type="submit" 
-                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 col-span-2"
-                >
-                    กรองข้อมูล
+                    class="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600">
+                    ค้นหา
                 </button>
             </form>
-            
             
             <!-- รายการหมู -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

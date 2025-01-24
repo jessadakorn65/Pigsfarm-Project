@@ -30,22 +30,27 @@ class CustomUserCreationForm(forms.ModelForm):
             raise forms.ValidationError("Passwords do not match.")
         
         return cleaned_data
+    
 
 from django import forms
-from .models import Insemination
+from .models import BreedingRecord
 
-class InseminationForm(forms.ModelForm):
+class BreedingRecordForm(forms.ModelForm):
     class Meta:
-        model = Insemination
-        fields = ['insemination_date', 'semen_id', 'img', 'insemination_result', 'notes']
+        model = BreedingRecord
+        fields = ['breeding_date', 'semen_id', 'insemination_count']
         widgets = {
-            'insemination_date': forms.DateInput(attrs={'type': 'date'}),
+            'breeding_date': forms.DateInput(attrs={'type': 'date'}),
         }
-
 from django import forms
 from .models import Pig
 
 class PigForm(forms.ModelForm):
     class Meta:
         model = Pig
-        fields = ['img', 'pig_id', 'address_lock', 'zone', 'status']
+        fields = ['pig_id', 'name', 'status', 'zone', 'address_lock', 'image']  # ฟิลด์ที่ต้องการให้ผู้ใช้กรอก
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'zone': forms.TextInput(attrs={'class': 'form-input'}),
+            'address_lock': forms.TextInput(attrs={'class': 'form-input'}),
+        }

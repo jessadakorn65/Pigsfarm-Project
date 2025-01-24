@@ -1,5 +1,7 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,10 +64,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "myproject.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+	'default': {
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': os.getenv('DB_NAME'),
+		'USER': os.getenv('DB_USER'),
+		'PASSWORD': os.getenv('DB_PASSWORD'),
+		'HOST':os.getenv('DB_HOSt'),
+		'PORT':os.getenv('DB_PORT'),
+	}
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -92,3 +98,11 @@ STATIC_URL = "/static/"  # เส้นทางที่ใช้เรีย�
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# settings.py
+
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

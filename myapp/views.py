@@ -65,89 +65,107 @@ def login_view(request):
     return render(request, 'myapp/login.html')  # เส้นทางหน้าเข้าสู่ระบบ
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Pig, Insemination
-from .forms import InseminationForm
+from .models import Pig, BreedingRecord
+from .forms import BreedingRecordForm
 
-# ฟังก์ชันค้นหาสุกร
-def search_pigs(request):
-    query = request.GET.get('q')  # รับคีย์เวิร์ดที่กรอกในช่องค้นหา
-    pigs = None
-    if query:
-        pigs = Pig.objects.filter(pig_id__icontains=query)
-    return render(request, 'myapp/search_pigs.html', {'pigs': pigs})
 
-# ฟังก์ชันบันทึกข้อมูลการผสม
-def insemination_record(request, pig_id):
-    pig = get_object_or_404(Pig, id=pig_id)
+
+def record_breeding(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)
     if request.method == 'POST':
-        form = InseminationForm(request.POST, request.FILES)
+        form = BreedingRecordForm(request.POST)
         if form.is_valid():
-            insemination = form.save(commit=False)
-            insemination.pig = pig
-            insemination.save()
-            return redirect('pig_detail', pig_id=pig.id)
+            record = form.save(commit=False)
+            record.pig = pig
+            record.save()
+            return render(request, 'myapp/delivery_popup.html', {'delivery_date': record.delivery_date})
     else:
-        form = InseminationForm()
-    return render(request, 'myapp/insemination_record.html', {'form': form, 'pig': pig})
+        form = BreedingRecordForm()
+    return render(request, 'myapp/record_breeding.html', {'pig': pig, 'form': form})
 
 from django.shortcuts import render, get_object_or_404
-from .models import Pig, Insemination
+from .models import Pig
 
-def pig_detail(request, pig_id):
-    pig = get_object_or_404(Pig, id=pig_id)
-    inseminations = Insemination.objects.filter(pig=pig)
-    return render(request, 'myapp/pig_detail.html', {'pig': pig, 'inseminations': inseminations})
+# ฟังก์ชันแสดงประวัติการผสม
+def breeding_history(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)  # ดึงข้อมูลหมูตาม pig_id
+    breeding_records = pig.breeding_records.all()  # ดึงข้อมูลประวัติการผสมทั้งหมดที่เชื่อมโยงกับหมูตัวนี้
 
+    # ส่งข้อมูลไปที่เทมเพลต
+    return render(request, 'myapp/breeding_history.html', {
+        'pig': pig,
+        'breeding_records': breeding_records
+    })
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import BreedingRecord
+
+# ฟังก์ชันสำหรับลบประวัติการผสม
+def delete_breeding_record(request, record_id):
+    record = get_object_or_404(BreedingRecord, id=record_id)
+    record.delete()  # ลบประวัติการผสม
+    return redirect('breeding_history', pig_id=record.pig.pig_id)  # กลับไปที่หน้าประวัติการผสมของหมู
+
+from django.shortcuts import render
+from .models import Pig
+
+from django.db.models import Q  # สำหรับการค้นหาที่ซับซ้อน
+
+def pig_list(request):
+    # รับค่าพารามิเตอร์จาก URL
+    query = request.GET.get('q', '')  # คำค้นหา
+    status_filter = request.GET.get('status', '')  # สถานะ (ready หรือ waiting)
+    zone_filter = request.GET.get('zone', '')  # โซน
+
+    pigs = Pig.objects.all()
+
+    # ใช้ฟิลเตอร์ทีละขั้นตอน
+    if query:
+        pigs = pigs.filter(Q(pig_id__icontains=query) | Q(name__icontains=query))
+    if status_filter:
+        pigs = pigs.filter(status=status_filter)
+    if zone_filter:
+        pigs = pigs.filter(zone__icontains=zone_filter)
+
+    # ส่งข้อมูลไปยังเทมเพลต
+    return render(request, 'myapp/pig_list.html', {'pigs': pigs})
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Pig
+from .forms import PigForm  # สมมติว่าคุณมีแบบฟอร์มสำหรับแก้ไขข้อมูลหมู
+
+def edit_pig(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)  # ดึงข้อมูลหมูตาม ID
+    if request.method == 'POST':
+        form = PigForm(request.POST, request.FILES, instance=pig)  # อัปเดตข้อมูลหมู
+        if form.is_valid():
+            form.save()
+            return redirect('pig_list')  # เปลี่ยนไปหน้ารายการหมูหลังจากแก้ไข
+    else:
+        form = PigForm(instance=pig)  # สร้างฟอร์มพร้อมข้อมูลเดิม
+    return render(request, 'myapp/edit_pig.html', {'form': form, 'pig': pig})
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import Pig
+
+def delete_pig(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)  # ดึงข้อมูลหมูตาม ID
+    if request.method == "POST":
+        pig.delete()  # ลบข้อมูลหมู
+        return redirect('pig_list')  # กลับไปยังหน้ารายการหมู
+    return render(request, 'myapp/delete_pig.html', {'pig': pig})
 
 from django.shortcuts import render, redirect
-from .forms import PigForm
+from .models import Pig
+from .forms import PigForm  # ฟอร์มที่ใช้สำหรับเพิ่มหมู
 
-# เพิ่มหมูใหม่
 def add_pig(request):
     if request.method == 'POST':
         form = PigForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('search_pigs')  # กลับไปที่หน้าค้นหาหมู
+            form.save()  # บันทึกข้อมูลหมู
+            return redirect('pig_list')  # กลับไปหน้ารายการหมู
     else:
         form = PigForm()
     return render(request, 'myapp/add_pig.html', {'form': form})
-
-
-def pig_list(request):
-    pigs = Pig.objects.all()  # ดึงข้อมูลสุกรทั้งหมดจากฐานข้อมูล
-    return render(request, 'myapp/pig_list.html', {'pigs': pigs})
-
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Pig, Insemination
-
-@login_required
-def add_insemination(request, pig_id):
-    pig = Pig.objects.get(pig_id=pig_id)
-    if request.method == 'POST':
-        insemination_date = request.POST.get('insemination_date')
-        semen_id = request.POST.get('semen_id')
-        notes = request.POST.get('notes', '')
-
-        # สร้างบันทึกการผสม
-        insemination = Insemination(
-            pig=pig,
-            insemination_date=insemination_date,
-            semen_id=semen_id,
-            notes=notes,
-            recorded_by=request.user  # บันทึกผู้ใช้ที่ล็อกอิน
-        )
-        insemination.save()
-
-        # อัปเดตสถานะหมู
-        pig.status = 'pregnant'
-        pig.save()
-
-        # ส่งข้อความป๊อปอัพ
-        messages.success(request, f"บันทึกสำเร็จ! วันที่คาดว่าจะคลอด: {insemination.expected_delivery_date}")
-
-        return redirect('pig_list')
-
-    return render(request, 'add_insemination.html', {'pig': pig})

@@ -25,36 +25,37 @@ class CustomUser(AbstractUser):
 from django.db import models
 
 # ตาราง pigs
+from django.db import models
+from datetime import timedelta
+
+from django.db import models
+from datetime import timedelta
+
 class Pig(models.Model):
-    id = models.AutoField(primary_key=True)
-    img = models.ImageField(upload_to='pig_images/', blank=True, null=True)
-    pig_id = models.CharField(max_length=50)
-    address_lock = models.CharField(max_length=255)
-    zone = models.CharField(max_length=5)
+    pig_id = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=100)
     status = models.CharField(
-        max_length=10,
-        choices=[('ปกติ', 'ปกติ'), ('ผสมแล้ว', 'ผสมแล้ว')],
-        default='ปกติ'
+        max_length=50,
+        choices=[('ready', 'Ready for Breeding'), ('waiting', 'Waiting for Delivery')],
+        default='ready'
     )
+    zone = models.CharField(max_length=50)
+    address_lock = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='pigs/', blank=True, null=True)  # เพิ่มฟิลด์สำหรับอัพโหลดรูปภาพ
 
     def __str__(self):
-        return self.pig_id
+        return f"{self.pig_id} - {self.name}"
 
-# ตาราง inseminations
-class Insemination(models.Model):
-    inseminations_id = models.AutoField(primary_key=True)
-    pig = models.ForeignKey(Pig, on_delete=models.CASCADE)
-    insemination_date = models.DateField()
+
+class BreedingRecord(models.Model):
+    pig = models.ForeignKey(Pig, on_delete=models.CASCADE, related_name='breeding_records')
+    breeding_date = models.DateField()
     semen_id = models.CharField(max_length=50)
-    img = models.ImageField(upload_to='insemination_images/', blank=True, null=True)
-    insemination_result = models.CharField(
-        max_length=10,
-        choices=[('สำเร็จ', 'สำเร็จ'), ('ล้มเหลว', 'ล้มเหลว')],
-        default='ล้มเหลว'
-    )
-    notes = models.TextField(blank=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    insemination_count = models.IntegerField(default=1)
+    delivery_date = models.DateField(blank=True, null=True)
 
-    def __str__(self):
-        return f"Insemination {self.inseminations_id} for Pig {self.pig.pig_id}"
+    def save(self, *args, **kwargs):
+        if not self.delivery_date:
+            self.delivery_date = self.breeding_date + timedelta(days=110)
+        super().save(*args, **kwargs)
 
