@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
-
+from .models import Pig, PigQueue
 
 # ฟังก์ชันเข้าสู่ระบบ
 def custom_login(request):
@@ -64,11 +64,10 @@ def register(request):
 def login_view(request):
     return render(request, 'myapp/login.html')  # เส้นทางหน้าเข้าสู่ระบบ
 #-------------------------------------------------------------------------------------------------------------------------------------------------
+# views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Pig, BreedingRecord
 from .forms import BreedingRecordForm
-
-
 
 def record_breeding(request, pig_id):
     pig = get_object_or_404(Pig, pig_id=pig_id)
@@ -78,48 +77,34 @@ def record_breeding(request, pig_id):
             record = form.save(commit=False)
             record.pig = pig
             record.save()
+            # เปลี่ยนสถานะหมูเป็น "ผสมแล้ว"
+            pig.status = 'bred'
+            pig.save()
             return render(request, 'myapp/delivery_popup.html', {'delivery_date': record.delivery_date})
     else:
         form = BreedingRecordForm()
     return render(request, 'myapp/record_breeding.html', {'pig': pig, 'form': form})
 
-from django.shortcuts import render, get_object_or_404
-from .models import Pig
 
-# ฟังก์ชันแสดงประวัติการผสม
 def breeding_history(request, pig_id):
-    pig = get_object_or_404(Pig, pig_id=pig_id)  # ดึงข้อมูลหมูตาม pig_id
+    pig = get_object_or_404(Pig, pig_id=pig_id)  # ใช้ pig_id เป็น primary key
     breeding_records = pig.breeding_records.all()  # ดึงข้อมูลประวัติการผสมทั้งหมดที่เชื่อมโยงกับหมูตัวนี้
-
-    # ส่งข้อมูลไปที่เทมเพลต
     return render(request, 'myapp/breeding_history.html', {
         'pig': pig,
         'breeding_records': breeding_records
     })
 
-from django.shortcuts import get_object_or_404, redirect
-from .models import BreedingRecord
-
-# ฟังก์ชันสำหรับลบประวัติการผสม
 def delete_breeding_record(request, record_id):
     record = get_object_or_404(BreedingRecord, id=record_id)
-    record.delete()  # ลบประวัติการผสม
-    return redirect('breeding_history', pig_id=record.pig.pig_id)  # กลับไปที่หน้าประวัติการผสมของหมู
-
-from django.shortcuts import render
-from .models import Pig
-
-from django.db.models import Q  # สำหรับการค้นหาที่ซับซ้อน
+    record.delete()
+    return redirect('breeding_history', pig_id=record.pig.pig_id)  # ใช้ pig_id
 
 def pig_list(request):
-    # รับค่าพารามิเตอร์จาก URL
-    query = request.GET.get('q', '')  # คำค้นหา
-    status_filter = request.GET.get('status', '')  # สถานะ (ready หรือ waiting)
-    zone_filter = request.GET.get('zone', '')  # โซน
-
+    query = request.GET.get('q', '')
+    status_filter = request.GET.get('status', '')
+    zone_filter = request.GET.get('zone', '')
     pigs = Pig.objects.all()
 
-    # ใช้ฟิลเตอร์ทีละขั้นตอน
     if query:
         pigs = pigs.filter(Q(pig_id__icontains=query) | Q(name__icontains=query))
     if status_filter:
@@ -127,45 +112,73 @@ def pig_list(request):
     if zone_filter:
         pigs = pigs.filter(zone__icontains=zone_filter)
 
-    # ส่งข้อมูลไปยังเทมเพลต
     return render(request, 'myapp/pig_list.html', {'pigs': pigs})
 
-
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Pig
-from .forms import PigForm  # สมมติว่าคุณมีแบบฟอร์มสำหรับแก้ไขข้อมูลหมู
-
-def edit_pig(request, pig_id):
-    pig = get_object_or_404(Pig, pig_id=pig_id)  # ดึงข้อมูลหมูตาม ID
-    if request.method == 'POST':
-        form = PigForm(request.POST, request.FILES, instance=pig)  # อัปเดตข้อมูลหมู
-        if form.is_valid():
-            form.save()
-            return redirect('pig_list')  # เปลี่ยนไปหน้ารายการหมูหลังจากแก้ไข
-    else:
-        form = PigForm(instance=pig)  # สร้างฟอร์มพร้อมข้อมูลเดิม
-    return render(request, 'myapp/edit_pig.html', {'form': form, 'pig': pig})
-
-from django.shortcuts import get_object_or_404, redirect
-from .models import Pig
-
-def delete_pig(request, pig_id):
-    pig = get_object_or_404(Pig, pig_id=pig_id)  # ดึงข้อมูลหมูตาม ID
-    if request.method == "POST":
-        pig.delete()  # ลบข้อมูลหมู
-        return redirect('pig_list')  # กลับไปยังหน้ารายการหมู
-    return render(request, 'myapp/delete_pig.html', {'pig': pig})
-
-from django.shortcuts import render, redirect
-from .models import Pig
-from .forms import PigForm  # ฟอร์มที่ใช้สำหรับเพิ่มหมู
+from django.contrib import messages
+from django.db.models import Q
+from .models import Pig, BreedingRecord, PigQueue
+from .forms import PigForm, BreedingRecordForm
 
 def add_pig(request):
     if request.method == 'POST':
         form = PigForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()  # บันทึกข้อมูลหมู
-            return redirect('pig_list')  # กลับไปหน้ารายการหมู
+            form.save()
+            return redirect('pig_list')
     else:
         form = PigForm()
     return render(request, 'myapp/add_pig.html', {'form': form})
+
+def edit_pig(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)
+    if request.method == 'POST':
+        form = PigForm(request.POST, request.FILES, instance=pig)
+        if form.is_valid():
+            form.save()
+            return redirect('pig_list')
+    else:
+        form = PigForm(instance=pig)
+    return render(request, 'myapp/edit_pig.html', {'form': form, 'pig': pig})
+
+def delete_pig(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)
+    if request.method == "POST":
+        pig.delete()
+        return redirect('pig_list')
+    return render(request, 'myapp/delete_pig.html', {'pig': pig})
+
+def add_pig(request):
+    if request.method == 'POST':
+        form = PigForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('pig_list')
+    else:
+        form = PigForm()
+    return render(request, 'myapp/add_pig.html', {'form': form})
+
+# views.py
+from django.shortcuts import get_object_or_404, redirect
+from .models import Pig, PigQueue
+
+def add_to_queue(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)
+    # เปลี่ยนสถานะของหมูเป็น 'พร้อมผสม'
+    pig.status = 'ready'
+    pig.save()
+    # เพิ่มหมูลงในคิว
+    PigQueue.objects.create(pig=pig)
+    return redirect('pig_queue')
+
+
+def remove_from_queue(request, queue_id):
+    queue_item = get_object_or_404(PigQueue, id=queue_id)
+    queue_item.delete()
+    messages.success(request, f"ลบสุกร {queue_item.pig.pig_id} ออกจากคิวสำเร็จ!")
+    return redirect('pig_queue')
+
+def pig_queue(request):
+    queue = PigQueue.objects.all().order_by('added_at')
+    return render(request, 'myapp/pig_queue.html', {'queue': queue})
+

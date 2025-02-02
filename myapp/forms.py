@@ -33,24 +33,35 @@ class CustomUserCreationForm(forms.ModelForm):
     
 
 from django import forms
-from .models import BreedingRecord
+from .models import Pig, BreedingRecord
+
+class PigForm(forms.ModelForm):
+    class Meta:
+        model = Pig
+        fields = ['pig_id', 'name', 'status', 'zone', 'address_lock', 'image']
+        widgets = {
+            'pig_id': forms.TextInput(attrs={'class': 'form-control'}),
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'zone': forms.TextInput(attrs={'class': 'form-control'}),
+            'address_lock': forms.TextInput(attrs={'class': 'form-control'}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
 
 class BreedingRecordForm(forms.ModelForm):
     class Meta:
         model = BreedingRecord
         fields = ['breeding_date', 'semen_id', 'insemination_count']
         widgets = {
-            'breeding_date': forms.DateInput(attrs={'type': 'date'}),
+            'breeding_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'semen_id': forms.TextInput(attrs={'class': 'form-control'}),
+            'insemination_count': forms.NumberInput(attrs={'class': 'form-control'}),
         }
-from django import forms
-from .models import Pig
 
-class PigForm(forms.ModelForm):
+from django import forms
+from .models import Piglet
+
+class PigletForm(forms.ModelForm):
     class Meta:
-        model = Pig
-        fields = ['pig_id', 'name', 'status', 'zone', 'address_lock', 'image']  # ฟิลด์ที่ต้องการให้ผู้ใช้กรอก
-        widgets = {
-            'status': forms.Select(attrs={'class': 'form-select'}),
-            'zone': forms.TextInput(attrs={'class': 'form-input'}),
-            'address_lock': forms.TextInput(attrs={'class': 'form-input'}),
-        }
+        model = Piglet
+        fields = ['breeding_record', 'pig', 'semen_id', 'birth_date', 'alive_count', 'dead_count', 'deformed_count']

@@ -17,15 +17,31 @@
         </div>
         
         <!-- Form -->
-        <form method="post">
+        <form method="post" novalidate>
             {% csrf_token %}
             <!-- Form Fields -->
-            <div class="space-y-4">
-                {{ form.as_p }}
+            <div class="space-y-6">
+                {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.help_text %}
+                    <p class="mt-1 text-sm text-gray-500 italic">
+                        {{ field.help_text }}
+                    </p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <p class="mt-1 text-sm text-red-500">
+                        {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
             </div>
+            
             <!-- Submit Button -->
             <button type="submit" 
-                class="mt-4 w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">
+                class="mt-6 w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">
                 Register
             </button>
         </form>

@@ -1,14 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>บันทึกข้อมูลการผสม</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ART</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
-    <h1>บันทึกข้อมูลการผสมสำหรับหมู {{ pig.name }}</h1>
-    <form method="post">
+<body class="font-sans bg-gray-100">
+
+<header class="bg-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+        <img src="https://i.ibb.co/qkThxX8/logo.png" alt="logo" class="h-10">
+        <span class="text-xl font-semibold">ART</span>
+    </div>
+    <div class="flex items-center space-x-5">
+        <ul class="flex space-x-5 text-gray-700">
+            <li><a href="#"><i class="fa-solid fa-list"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-envelope"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i></a></li>
+        </ul>
+        <div class="relative">
+            <button class="flex items-center space-x-2 cursor-pointer">
+                <img src="https://picsum.photos/id/1074/50" alt="profile" class="h-12 w-12 rounded-full">
+                <span>jessadakorn fram</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <ul class="absolute right-0 hidden mt-2 bg-white shadow-lg rounded-md w-48 text-gray-800">
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Home</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Blog</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Contact</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Other</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Photo</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<!-- Header -->
+<header class="bg-teal-600 text-white py-4">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-4">
+        <h1 class="text-2xl font-bold">บันทึกข้อมูลการผสม</h1>
+        <a href="{% url 'pig_list' %}" class="text-white bg-teal-800 px-4 py-2 rounded hover:bg-teal-700">
+            กลับไปยังรายการสุกร
+        </a>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-semibold text-gray-800">บันทึกข้อมูลการผสม</h2>
+        <p class="text-gray-500 mt-2">สำหรับสุกร <span class="text-teal-600 font-bold">{{ pig.name }}</span></p>
+    </div>
+
+    <form method="post" class="space-y-6">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">บันทึก</button>
+        <!-- Render form fields -->
+        <div class="grid grid-cols-1 gap-6">
+            {% for field in form %}
+            <div>
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ field.errors }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center">
+            <button type="submit" class="w-full md:w-1/2 bg-teal-600 text-white py-3 px-6 rounded-lg hover:bg-teal-700 transition">
+                บันทึกข้อมูล
+            </button>
+        </div>
     </form>
+</main>
+
+<!-- Footer -->
+<footer class="mt-10 bg-gray-800 text-white text-center py-4">
+    <p class="text-sm">&copy; 2025 ระบบจัดการสุกร</p>
+</footer>
+<script>
+    document.querySelector('.main-top_button').addEventListener('click', function() {
+        document.querySelector('.menu-open').classList.toggle('hidden');
+    });
+
+    // JavaScript for handling the search functionality
+    const searchInput = document.getElementById('site-search');
+    searchInput.addEventListener('input', function() {
+        console.log('Searching for:', searchInput.value);
+    });
+</script>
+
 </body>
 </html>

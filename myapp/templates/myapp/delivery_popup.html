@@ -6,7 +6,7 @@
 <body>
     <script>
         alert("วันที่คลอดที่คาดการณ์: {{ delivery_date }}");
-        window.location.href = "/";
+        window.location.href = "{% url 'pig_list' %}";  // ไปยังหน้าที่ต้องการ
     </script>
 </body>
 </html>
