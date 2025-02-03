@@ -59,9 +59,23 @@ class BreedingRecordForm(forms.ModelForm):
         }
 
 from django import forms
-from .models import Piglet
+from .models import BreedingRecord
 
-class PigletForm(forms.ModelForm):
+class PigletRecordForm(forms.ModelForm):
     class Meta:
-        model = Piglet
-        fields = ['breeding_record', 'pig', 'semen_id', 'birth_date', 'alive_count', 'dead_count', 'deformed_count']
+        model = BreedingRecord
+        fields = ['delivery_date', 'birth_time', 'alive_piglets', 'dead_piglets', 'deformed_piglets']
+        labels = {
+            'delivery_date': 'วันที่คลอด',
+            'birth_time': 'เวลาคลอด',
+            'alive_piglets': 'จำนวนหมูรอด',
+            'dead_piglets': 'จำนวนหมูตาย',
+            'deformed_piglets': 'จำนวนหมูพิการ',
+        }
+        widgets = {
+            'delivery_date': forms.DateInput(attrs={'type': 'date', 'class': 'border rounded p-1'}),
+            'birth_time': forms.TimeInput(attrs={'type': 'time', 'class': 'border rounded p-1'}),
+            'alive_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
+            'dead_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
+            'deformed_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
+        }

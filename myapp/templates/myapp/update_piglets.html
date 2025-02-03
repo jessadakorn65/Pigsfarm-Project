@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+<h2 class="text-2xl font-bold mb-6 text-center">บันทึกข้อมูลลูกสุกรของหมูแม่พันธุ์: {{ pig.pig_id }}</h2>
+
+<form method="POST" class="bg-white p-6 shadow-md rounded-lg max-w-3xl mx-auto">
+    {% csrf_token %}
+    
+    <label class="block mb-2 font-medium">วันที่คลอด:</label>
+    <div class="mb-4">
+        {{ form.delivery_date }}
+    </div>
+
+    <label class="block mb-2 font-medium">เวลาคลอด:</label>
+    <div class="mb-4">
+        {{ form.birth_time }}
+    </div>
+
+    <label class="block mb-2 font-medium">จำนวนหมูรอด:</label>
+    <div class="mb-4">
+        {{ form.alive_piglets }}
+    </div>
+
+    <label class="block mb-2 font-medium">จำนวนหมูตาย:</label>
+    <div class="mb-4">
+        {{ form.dead_piglets }}
+    </div>
+
+    <label class="block mb-2 font-medium">จำนวนหมูพิการ:</label>
+    <div class="mb-4">
+        {{ form.deformed_piglets }}
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 w-full mt-4">
+        บันทึก
+    </button>
+</form>
+
+</body>
+</html>

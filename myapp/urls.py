@@ -3,6 +3,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import update_piglet_data
 # URL patterns สำหรับแอปพลิเคชัน
 urlpatterns = [
     path('', views.home, name='home'),  # เส้นทางไปยังหน้าแรก
@@ -22,5 +23,6 @@ urlpatterns = [
     path('queue/', views.pig_queue, name='pig_queue'),
     path('queue/add/<str:pig_id>/', views.add_to_queue, name='add_to_queue'),
     path('queue/remove/<int:queue_id>/', views.remove_from_queue, name='remove_from_queue'),
-  
+    
+    path('update-piglets/<str:pig_id>/', update_piglet_data, name='update_piglet_data'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

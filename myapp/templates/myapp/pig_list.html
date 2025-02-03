@@ -156,6 +156,15 @@
             <a href="{% url 'edit_pig' pig_id=pig.pig_id %}" class="block bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 text-center">แก้ไขข้อมูล</a>
         </div>
 
+        <form method="POST" action="{% url 'add_to_queue' pig.pig_id %}" class="block">
+            {% csrf_token %}
+            <button 
+                type="submit" 
+                class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                เพิ่มเข้าคิว
+            </button>
+        </form>
+
         <!-- 🗑 ปุ่มลบ -->
         <form method="POST" action="{% url 'delete_pig' pig_id=pig.pig_id %}" class="mt-3">
             {% csrf_token %}

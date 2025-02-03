@@ -182,3 +182,31 @@ def pig_queue(request):
     queue = PigQueue.objects.all().order_by('added_at')
     return render(request, 'myapp/pig_queue.html', {'queue': queue})
 
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Pig, BreedingRecord
+from .forms import PigletRecordForm
+
+def update_piglet_data(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)
+    latest_breeding_record = pig.breeding_records.order_by('-breeding_date').first()  # เอาประวัติการผสมล่าสุด
+
+    if not latest_breeding_record:
+        messages.error(request, "ไม่พบประวัติการผสมสำหรับหมูตัวนี้")
+        return redirect('breeding_history', pig_id=pig.pig_id)
+
+    if request.method == "POST":
+        form = PigletRecordForm(request.POST, instance=latest_breeding_record)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "บันทึกข้อมูลลูกสุกรสำเร็จ!")
+            return redirect('breeding_history', pig_id=pig.pig_id)
+    else:
+        form = PigletRecordForm(instance=latest_breeding_record)
+
+    return render(request, 'myapp/update_piglets.html', {
+        'pig': pig,
+        'form': form,
+    })

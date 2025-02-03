@@ -63,28 +63,41 @@ class BreedingRecord(models.Model):
     breeding_date = models.DateField()
     semen_id = models.CharField(max_length=50)
     insemination_count = models.IntegerField(default=1)
+    
+    # ข้อมูลการคลอด
     delivery_date = models.DateField(blank=True, null=True)
-    total_piglets = models.IntegerField(default=0)  # บันทึกจำนวนลูกสุกรทั้งหมด
+    birth_time = models.TimeField(blank=True, null=True)  # เวลาที่คลอด
+    alive_piglets = models.IntegerField(default=0)  
+    dead_piglets = models.IntegerField(default=0)  
+    deformed_piglets = models.IntegerField(default=0)
+
+    # เพิ่มฟิลด์รูปภาพและโน้ต
+    insemination_image = models.ImageField(upload_to='insemination_images/', blank=True, null=True)  # เก็บรูป
+    notes = models.TextField(blank=True, null=True)  # โน้ตเพิ่มเติม
+
+    @property
+    def total_piglets(self):
+        """ คำนวณจำนวนลูกสุกรทั้งหมดจากผลรวมของหมูรอด, ตาย, พิการ """
+        return self.alive_piglets + self.dead_piglets + self.deformed_piglets
 
     def save(self, *args, **kwargs):
+        # คำนวณวันที่คลอดถ้าไม่ได้ระบุ
         if not self.delivery_date:
             self.delivery_date = self.breeding_date + timedelta(days=110)
+        
+        # ตรวจสอบการผสมครั้งก่อนและอัปเดตจำนวนครั้งการผสม
+        if not self.insemination_count:
+            previous_record = BreedingRecord.objects.filter(pig=self.pig).order_by('-breeding_date').first()
+            if previous_record:
+                self.insemination_count = previous_record.insemination_count + 1
+            else:
+                self.insemination_count = 1
+
         super().save(*args, **kwargs)
 
-class Piglet(models.Model):
-    breeding_record = models.ForeignKey(BreedingRecord, on_delete=models.CASCADE, related_name='piglets')
-    pig = models.ForeignKey(Pig, on_delete=models.CASCADE, related_name='pig_piglets', to_field="pig_id")
-    semen_id = models.CharField(max_length=50, null=True, blank=True)
-    birth_date = models.DateField()
-    alive_count = models.IntegerField(default=0)
-    dead_count = models.IntegerField(default=0)
-    deformed_count = models.IntegerField(default=0)
 
-    def save(self, *args, **kwargs):
-        # อัปเดตจำนวนลูกสุกรทั้งหมดใน BreedingRecord
-        self.breeding_record.total_piglets = self.alive_count + self.dead_count + self.deformed_count
-        self.breeding_record.save()
-        super().save(*args, **kwargs)
+
+
 
 
 class PigQueue(models.Model):
