@@ -1,1 +1,91 @@
 finalpro\Scripts\activate
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ART</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="font-sans bg-gray-100">
+
+<header class="bg-white p-4 flex justify-between items-center shadow-md">
+    <div class="flex items-center space-x-3">
+        <img src="https://i.ibb.co/qkThxX8/logo.png" alt="logo" class="h-10">
+        <span class="text-xl font-semibold">ART</span>
+    </div>
+    <div class="flex items-center space-x-5">
+        <ul class="flex space-x-5 text-gray-700">
+            <li><a href="#"><i class="fa-solid fa-list"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-envelope"></i></a></li>
+            <li><a href="#"><i class="fa-solid fa-bell"></i></a></li>
+        </ul>
+        <div class="relative">
+            <button class="flex items-center space-x-2 cursor-pointer">
+                <img src="https://picsum.photos/id/1074/50" alt="profile" class="h-12 w-12 rounded-full">
+                <span>jessadakorn fram</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <ul class="absolute right-0 hidden mt-2 bg-white shadow-lg rounded-md w-48 text-gray-800">
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Home</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Blog</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Contact</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Other</a></li>
+                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Photo</a></li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<div class="flex">
+    <nav class="bg-gray-800 text-white w-64 p-4 h-screen">
+        <ul class="space-y-3">
+            <li><a href="{% url 'boss_dashboard' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-circle"></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'add_pig' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลสุกร</span></a></li>
+            <li><a href=" #" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-cogs"></i><span> </span>โปรไฟล์</a></li>
+            <li><a href="{% url 'pig_list' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-book"></i><span>บันทึกรายการสุกรในฟาร์ม</span></a></li>
+            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span></a></li>
+            <li><a href="{% url 'home' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="flex-1 p-6">
+        <div class="flex justify-between items-center">
+            <p class="text-gray-600">Welcome to ART</p>
+            <h2 class="text-xl font-medium">Search for your project</h2>
+        </div>
+
+        <div class="flex items-center relative mt-4">
+            <input id="site-search" type="search" class="w-72 py-2 px-4 border-2 border-gray-300 rounded-md pl-10" placeholder="Search" aria-label="Search">
+            <!-- เปลี่ยนไอคอนเป็น Font Awesome -->
+            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4 mt-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 1</div>
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 2</div>
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 3</div>
+            <div class="bg-white p-6 rounded-lg shadow-md">Item 4</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('.main-top_button').addEventListener('click', function() {
+        document.querySelector('.menu-open').classList.toggle('hidden');
+    });
+
+    // JavaScript for handling the search functionality
+    const searchInput = document.getElementById('site-search');
+    searchInput.addEventListener('input', function() {
+        console.log('Searching for:', searchInput.value);
+    });
+</script>
+
+</body>
+</html>

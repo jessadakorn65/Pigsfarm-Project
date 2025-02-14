@@ -25,4 +25,6 @@ urlpatterns = [
     path('queue/remove/<int:queue_id>/', views.remove_from_queue, name='remove_from_queue'),
     
     path('update-piglets/<str:pig_id>/', update_piglet_data, name='update_piglet_data'),
+    path('check_heat_status/<str:pig_id>/', views.check_heat_status, name='check_heat_status'),
+    
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

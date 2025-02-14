@@ -210,3 +210,31 @@ def update_piglet_data(request, pig_id):
         'pig': pig,
         'form': form,
     })
+
+# myapp/views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Pig
+from .forms import CheckHeatStatusForm
+
+def check_heat_status(request, pig_id):
+    pig = get_object_or_404(Pig, pig_id=pig_id)
+
+    if request.method == "POST":
+        form = CheckHeatStatusForm(request.POST)
+        if form.is_valid():
+            # รับข้อมูลจากฟอร์ม
+            is_genital_swollen = form.cleaned_data['is_genital_swollen'] == 'yes'
+            is_in_heat = form.cleaned_data['is_in_heat'] == 'yes'
+
+            # อัปเดตสถานะของหมู
+            pig.is_genital_swollen = is_genital_swollen
+            pig.is_in_heat = is_in_heat
+            pig.update_status()  # ใช้ฟังก์ชัน update_status เพื่อเปลี่ยนสถานะของหมู
+            pig.save()
+
+            return redirect('pig_list')  # ไปที่หน้า pig_list หลังจากอัปเดตสถานะ
+
+    else:
+        form = CheckHeatStatusForm()
+
+    return render(request, 'myapp/check_heat_status.html', {'form': form, 'pig': pig})

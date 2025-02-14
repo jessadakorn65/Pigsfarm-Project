@@ -29,32 +29,41 @@ from datetime import timedelta
 # models.py
 from django.db import models
 
+from django.db import models
+
 class Pig(models.Model):
     PIG_STATUS_CHOICES = [
         ('not_bred', 'ยังไม่ผสม'),
         ('ready', 'พร้อมผสม'),
         ('bred', 'ผสมแล้ว'),
-        ('waiting', 'รอคลอด'),
+        ('delivered', 'คลอดแล้ว'),
     ]
+    
     pig_id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField(max_length=100)
     status = models.CharField(
         max_length=50,
         choices=PIG_STATUS_CHOICES,
-        default='not_bred'  # ค่าเริ่มต้นเป็นยังไม่ผสม
+        default='not_bred'  
     )
     zone = models.CharField(max_length=50)
     address_lock = models.CharField(max_length=100)
     image = models.ImageField(upload_to='pigs/', blank=True, null=True)
 
+    # ฟิลด์ใหม่
+    is_genital_swollen = models.BooleanField(default=False)  # อวัยวะเพศบวมไหม
+    is_in_heat = models.BooleanField(default=False)  # ขี่หลังแล้วมีอาการฮีสติดสัดไหม
+
     def __str__(self):
         return f"{self.pig_id} - {self.name}"
 
-    # ฟังก์ชันเพื่อเปลี่ยนสถานะหมูอัตโนมัติ
     def update_status(self):
-        if self.status == 'ready' and self.pig_id not in PigQueue.objects.filter(pig=self).values_list('pig', flat=True):
-            self.status = 'not_bred'  # ยังไม่ผสม
+        if self.is_genital_swollen and self.is_in_heat:
+            self.status = "bred"
+        else:
+            self.status = "not_bred"
         self.save()
+
 
 
 

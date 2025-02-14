@@ -1,0 +1,21 @@
+<form method="POST" action="{% url 'check_heat_status' pig.pig_id %}">
+    {% csrf_token %}
+
+    <div class="mb-4">
+        <label class="block text-gray-700">อวัยวะเพศบวมไหม?</label>
+        <select name="is_genital_swollen" class="w-full border rounded px-4 py-2">
+            <option value="yes">ใช่</option>
+            <option value="no">ไม่ใช่</option>
+        </select>
+    </div>
+
+    <div class="mb-4">
+        <label class="block text-gray-700">ขี่หลังแล้วมีอาการฮีสติดสัดไหม?</label>
+        <select name="is_in_heat" class="w-full border rounded px-4 py-2">
+            <option value="yes">ใช่</option>
+            <option value="no">ไม่ใช่</option>
+        </select>
+    </div>
+
+    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-lg">ยืนยัน</button>
+</form>

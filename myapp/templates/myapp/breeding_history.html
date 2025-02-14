@@ -6,64 +6,68 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-    <div class="max-w-4xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
-        <h2 class="text-2xl font-bold mb-6 text-center">ประวัติการผสมของแม่สุกร: {{ pig.pig_id }}</h2>
-        
-        {% if breeding_records %}
-        <table class="w-full border-collapse border border-gray-300 text-sm">
-            <thead>
-                <tr class="bg-gray-200 text-center">
-                    <th class="border border-gray-300 px-4 py-2">วันที่ผสม</th>
-                    <th class="border border-gray-300 px-4 py-2">รหัสน้ำเชื้อ</th>
-                    <th class="border border-gray-300 px-4 py-2">จำนวนครั้ง</th>
-                    <th class="border border-gray-300 px-4 py-2">วันที่คลอด</th>
-                    <th class="border border-gray-300 px-4 py-2">เวลาคลอด</th>
-                    <th class="border border-gray-300 px-4 py-2">รอด</th>
-                    <th class="border border-gray-300 px-4 py-2">ตาย</th>
-                    <th class="border border-gray-300 px-4 py-2">พิการ</th>
-                    <th class="border border-gray-300 px-4 py-2">รวม</th>
-                    <th class="border border-gray-300 px-4 py-2">จัดการ</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in breeding_records %}
-                <tr class="text-center hover:bg-gray-100">
-                    <td class="border border-gray-300 px-4 py-2">{{ record.breeding_date }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ record.semen_id }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ record.insemination_count }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ record.delivery_date|default:"-" }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ record.birth_time|default:"-" }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ record.alive_piglets }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ record.dead_piglets }}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{ record.deformed_piglets }}</td>
-                    <td class="border border-gray-300 px-4 py-2 font-bold">
-                        {{ record.total_piglets }}
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <a href="{% url 'update_piglet_data' pig.pig_id %}" 
-                            class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                            บันทึก
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p class="text-center text-gray-500">ไม่มีประวัติการผสม</p>
-        {% endif %}
-    
-        <div class="mt-6 flex justify-between">
-            <a href="{% url 'pig_list' %}" 
-                class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                กลับไปยังรายการหมู
-            </a>
-            <a href="{% url 'update_piglet_data' pig.pig_id %}" 
-                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                + บันทึกข้อมูลลูกสุกร
-            </a>
-        </div>
+<div class="max-w-5xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
+    <h2 class="text-2xl font-bold mb-6 text-center">ประวัติการผสมของแม่สุกร: {{ pig.pig_id }}</h2>
+
+    {% if breeding_records %}
+    <table class="w-full border-collapse border border-gray-300 text-sm">
+        <thead>
+            <tr class="bg-gray-200 text-center">
+                <th class="border border-gray-300 px-4 py-2">วันที่ผสม</th>
+                <th class="border border-gray-300 px-4 py-2">รหัสน้ำเชื้อ</th>
+                <th class="border border-gray-300 px-4 py-2">วันที่คลอด</th>
+                <th class="border border-gray-300 px-4 py-2">เวลาคลอด</th>
+                <th class="border border-gray-300 px-4 py-2">รอด</th>
+                <th class="border border-gray-300 px-4 py-2">ตาย</th>
+                <th class="border border-gray-300 px-4 py-2">พิการ</th>
+                <th class="border border-gray-300 px-4 py-2">รวม</th>
+                <th class="border border-gray-300 px-4 py-2">หมายเหตุ</th>
+                <th class="border border-gray-300 px-4 py-2">จัดการ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in breeding_records %}
+            <tr class="text-center hover:bg-gray-100">
+                <td class="border border-gray-300 px-4 py-2">{{ record.breeding_date }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ record.semen_id }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ record.delivery_date|default:"-" }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ record.birth_time|default:"-" }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ record.alive_piglets }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ record.dead_piglets }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ record.deformed_piglets }}</td>
+                <td class="border border-gray-300 px-4 py-2 font-bold">
+                    {{ record.total_piglets }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                    {{ record.notes|default:"-" }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                    <a href="{% url 'update_piglet_data' pig.pig_id %}" 
+                       class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                        แก้ไข
+                    </a>
+                    <a href="{% url 'delete_breeding_record' record.id %}" 
+                       class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                        ลบ
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-center text-gray-500">ไม่มีประวัติการผสม</p>
+    {% endif %}
+
+    <div class="mt-6 flex justify-between">
+        <a href="{% url 'pig_list' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            กลับไปยังรายการหมู
+        </a>
+        <a href="{% url 'update_piglet_data' pig.pig_id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            + บันทึกข้อมูลลูกสุกร
+        </a>
     </div>
-    
+</div>
+
 </body>
 </html>

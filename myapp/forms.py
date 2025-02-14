@@ -48,15 +48,20 @@ class PigForm(forms.ModelForm):
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
 
+from django import forms
+from .models import BreedingRecord
+
 class BreedingRecordForm(forms.ModelForm):
     class Meta:
         model = BreedingRecord
-        fields = ['breeding_date', 'semen_id', 'insemination_count']
+        fields = ['breeding_date', 'semen_id', 'notes',]  # เอา insemination_count ออก
         widgets = {
             'breeding_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'semen_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'insemination_count': forms.NumberInput(attrs={'class': 'form-control'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+
 
 from django import forms
 from .models import BreedingRecord
@@ -79,3 +84,14 @@ class PigletRecordForm(forms.ModelForm):
             'dead_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
             'deformed_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
         }
+
+# myapp/forms.py
+from django import forms
+
+class CheckHeatStatusForm(forms.Form):
+    GENITAL_CHOICES = [
+        ('yes', 'ใช่'),
+        ('no', 'ไม่ใช่')
+    ]
+    is_genital_swollen = forms.ChoiceField(choices=GENITAL_CHOICES, widget=forms.RadioSelect, label='อวัยวะเพศบวมไหม?')
+    is_in_heat = forms.ChoiceField(choices=GENITAL_CHOICES, widget=forms.RadioSelect, label='ขี่หลังแล้วมีอาการฮีสติดสัดไหม?')

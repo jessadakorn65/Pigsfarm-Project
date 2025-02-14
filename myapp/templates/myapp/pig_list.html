@@ -41,17 +41,52 @@
 <div class="flex">
     <nav class="bg-gray-800 text-white w-64 p-4 h-screen">
         <ul class="space-y-3">
-            <li><a href="{% url 'boss_dashboard' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-circle"></i><span>Dashboard</span></a></li>
-            <li><a href="{% url 'add_pig' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลสุกร</span></a></li>
-            <li><a href=" #" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-cogs"></i><span> </span>โปรไฟล์</a></li>
-            <li><a href="{% url 'pig_list' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-book"></i><span>บันทึกรายการสุกรในฟาร์ม</span></a></li>
-            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span></a></li>
-            <li><a href="{% url 'home' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span></a></li>
+            <li>
+                <a href="{% url 'boss_dashboard' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-circle"></i><span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'add_pig' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลสุกร</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-cogs"></i><span>โปรไฟล์</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'pig_list' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-book"></i><span>บันทึกรายการสุกรในฟาร์ม</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'pig_queue' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-yellow-500 active:bg-yellow-700">
+                    <i class="fa-solid fa-list"></i><span>ดูรายการคิว</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'home' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span>
+                </a>
+            </li>
+            
         </ul>
     </nav>
-
-
-
+    
     
     <div class="flex-1 p-6">
         <div class="flex justify-between items-center">
@@ -126,55 +161,79 @@
         filterForm.classList.toggle("hidden");
     });
 </script>
- <!-- 🐷 รายการหมู -->
- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for pig in pigs %}
-    <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl">
-        <!-- รูปภาพ -->
-        <div class="flex justify-center mb-4">
-            {% if pig.image %}
-                <img src="{{ pig.image.url }}" alt="{{ pig.name }}" class="w-32 h-32 object-cover rounded-full shadow-md">
-            {% else %}
-                <div class="w-32 h-32 bg-gray-200 flex items-center justify-center rounded-full shadow-md">
-                    <p class="text-gray-500 text-sm">ไม่มีรูป</p>
+ 
+
+   
+    
+    <!-- รายการหมู -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for pig in pigs %}
+        <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl">
+            <!-- รูปภาพ -->
+            <div class="flex justify-center mb-4">
+                {% if pig.image %}
+                    <img src="{{ pig.image.url }}" alt="{{ pig.name }}" class="w-32 h-32 object-cover rounded-full shadow-md">
+                {% else %}
+                    <div class="w-32 h-32 bg-gray-200 flex items-center justify-center rounded-full shadow-md">
+                        <p class="text-gray-500 text-sm">ไม่มีรูป</p>
+                    </div>
+                {% endif %}
+            </div>
+    
+            <!-- ข้อมูลหมู -->
+            <div class="text-center">
+                <h3 class="text-xl font-bold text-gray-800">{{ pig.pig_id }} - {{ pig.name }}</h3>
+    
+                <p class="inline-block px-3 py-1 rounded-lg border font-semibold text-sm mt-2
+                    {% if pig.status == 'ready' %} border-green-500 text-green-500 bg-white 
+                    {% elif pig.status == 'not_bred' %} border-gray-500 text-gray-500 bg-white 
+                    {% elif pig.status == 'bred' %} border-blue-500 text-blue-500 bg-white 
+                    {% elif pig.status == 'delivered' %} border-red-500 text-red-500 bg-white 
+                    {% else %} border-gray-300 text-gray-300 bg-white {% endif %}">
+                    {{ pig.get_status_display }}
+                </p>
+    
+                <p class="text-sm text-gray-500 mt-1">โซน: {{ pig.zone }}</p>
+                <p class="text-sm text-gray-500">ล็อคที่อยู่: {{ pig.address_lock }}</p>
+            </div>
+    
+            <!-- ปุ่มการจัดการ -->
+            <div class="mt-4 space-y-4">
+                <div class="flex space-x-4">
+                    <a href="{% url 'record_breeding' pig_id=pig.pig_id %}" class="flex-1 bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 text-center">บันทึกข้อมูลการผสม</a>
+                    <a href="{% url 'breeding_history' pig_id=pig.pig_id %}" class="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 text-center">ดูประวัติการผสม</a>
+                    <!-- เพิ่มปุ่มสำหรับไปหน้าตรวจสอบการผสม -->
+                    {% if pig.status == 'bred' %}
+                    <a href="{% url 'check_heat_status' pig.pig_id %}" class="text-blue-500 hover:underline mt-4 block">
+                            ตรวจสอบการผสม
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'edit_pig' pig_id=pig.pig_id %}" class="flex-1 bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 text-center">แก้ไขข้อมูล</a>
                 </div>
-            {% endif %}
+                
+    
+                <!-- เพิ่มเข้าคิว -->
+                <form method="POST" action="{% url 'add_to_queue' pig.pig_id %}" class="block">
+                    {% csrf_token %}
+                    <button 
+                        type="submit" 
+                        class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+                        เพิ่มเข้าคิว
+                    </button>
+                </form>
+    
+                <!-- ลบ -->
+                <form method="POST" action="{% url 'delete_pig' pig_id=pig.pig_id %}" class="mt-3">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600">
+                        ลบข้อมูล
+                    </button>
+                </form>
+            </div>
         </div>
-
-        <!-- ข้อมูลหมู -->
-        <div class="text-center">
-            <h3 class="text-xl font-bold text-gray-800">{{ pig.pig_id }} - {{ pig.name }}</h3>
-            <p class="text-gray-600">สถานะ: {{ pig.get_status_display }}</p>
-            <p class="text-sm text-gray-500">โซน: {{ pig.zone }}</p>
-        </div>
-
-        <!-- 🛠 ปุ่มการจัดการ -->
-        <div class="mt-4 space-y-2">
-            <a href="{% url 'record_breeding' pig_id=pig.pig_id %}" class="block bg-teal-500 text-white py-2 rounded-lg hover:bg-teal-600 text-center">บันทึกข้อมูลการผสม</a>
-            <a href="{% url 'breeding_history' pig_id=pig.pig_id %}" class="block bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 text-center">ดูประวัติการผสม</a>
-            
-            <a href="{% url 'edit_pig' pig_id=pig.pig_id %}" class="block bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600 text-center">แก้ไขข้อมูล</a>
-        </div>
-
-        <form method="POST" action="{% url 'add_to_queue' pig.pig_id %}" class="block">
-            {% csrf_token %}
-            <button 
-                type="submit" 
-                class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
-                เพิ่มเข้าคิว
-            </button>
-        </form>
-
-        <!-- 🗑 ปุ่มลบ -->
-        <form method="POST" action="{% url 'delete_pig' pig_id=pig.pig_id %}" class="mt-3">
-            {% csrf_token %}
-            <button type="submit" class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600">ลบข้อมูล</button>
-        </form>
+        {% endfor %}
     </div>
-    {% empty %}
-    <p class="text-center text-gray-500 col-span-3">ไม่มีข้อมูลหมู</p>
-    {% endfor %}
-</div>
+    
    
 
 

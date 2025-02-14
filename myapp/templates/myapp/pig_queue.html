@@ -38,14 +38,51 @@
     <!-- Sidebar -->
     <nav class="bg-gray-800 text-white w-64 p-4 h-screen">
         <ul class="space-y-3">
-            <li><a href="{% url 'boss_dashboard' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-circle"></i><span>Dashboard</span></a></li>
-            <li><a href="{% url 'add_pig' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลสุกร</span></a></li>
-            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-cogs"></i><span>โปรไฟล์</span></a></li>
-            <li><a href="{% url 'pig_list' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-book"></i><span>บันทึกรายการสุกรในฟาร์ม</span></a></li>
-            <li><a href="#" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span></a></li>
-            <li><a href="{% url 'home' %}" class="flex items-center space-x-3 py-3 hover:bg-teal-500"><i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span></a></li>
+            <li>
+                <a href="{% url 'boss_dashboard' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-circle"></i><span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'add_pig' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลสุกร</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-cogs"></i><span>โปรไฟล์</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'pig_list' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-book"></i><span>บันทึกรายการสุกรในฟาร์ม</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'pig_queue' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-yellow-500 active:bg-yellow-700">
+                    <i class="fa-solid fa-list"></i><span>ดูรายการคิว</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'home' %}" 
+                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
+                    <i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span>
+                </a>
+            </li>
         </ul>
     </nav>
+    
 
     <!-- Main Content -->
     <main class="flex-1 p-6">
