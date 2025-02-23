@@ -22,6 +22,7 @@
                 <th class="border border-gray-300 px-4 py-2">พิการ</th>
                 <th class="border border-gray-300 px-4 py-2">รวม</th>
                 <th class="border border-gray-300 px-4 py-2">หมายเหตุ</th>
+                <th class="border border-gray-300 px-4 py-2">ส่งออก</th>  <!-- คอลัมน์ใหม่ -->
                 <th class="border border-gray-300 px-4 py-2">จัดการ</th>
             </tr>
         </thead>
@@ -40,6 +41,18 @@
                 </td>
                 <td class="border border-gray-300 px-4 py-2">
                     {{ record.notes|default:"-" }}
+                </td>
+                <td class="border border-gray-300 px-4 py-2">
+                    {% if pig.status == 'delivered' %}
+                    <form action="{% url 'export_pig' pig.pig_id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                            ส่งออก
+                        </button>
+                    </form>
+                    {% else %}
+                        ส่งออกแล้ว
+                    {% endif %}
                 </td>
                 <td class="border border-gray-300 px-4 py-2">
                     <a href="{% url 'update_piglet_data' pig.pig_id %}" 
@@ -63,6 +76,14 @@
         <a href="{% url 'pig_list' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
             กลับไปยังรายการหมู
         </a>
+
+        <form action="{% url 'reset_mother_status' pig.pig_id %}" method="POST" class="flex items-center space-x-4">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">
+                รีเซ็ตสถานะเป็น 'ยังไม่ผสม'
+            </button>
+        </form>
+
         <a href="{% url 'update_piglet_data' pig.pig_id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             + บันทึกข้อมูลลูกสุกร
         </a>

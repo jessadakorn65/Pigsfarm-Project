@@ -26,5 +26,6 @@ urlpatterns = [
     
     path('update-piglets/<str:pig_id>/', update_piglet_data, name='update_piglet_data'),
     path('check_heat_status/<str:pig_id>/', views.check_heat_status, name='check_heat_status'),
-    
+    path('reset_mother_status/<str:pig_id>/', views.reset_mother_status, name='reset_mother_status'),
+    path('export_pig/<str:pig_id>/', views.export_pig, name='export_pig'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

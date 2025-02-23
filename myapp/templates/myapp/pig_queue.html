@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>ART - คิวสุกร</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" 
@@ -18,114 +17,87 @@
         <img src="https://i.ibb.co/qkThxX8/logo.png" alt="logo" class="h-10">
         <span class="text-xl font-semibold">ART - ระบบจัดการฟาร์มสุกร</span>
     </div>
-    <div class="flex items-center space-x-5">
-        <ul class="flex space-x-5 text-gray-700">
-            <li><a href="#"><i class="fa-solid fa-list"></i></a></li>
-            <li><a href="#"><i class="fa-solid fa-envelope"></i></a></li>
-            <li><a href="#"><i class="fa-solid fa-bell"></i></a></li>
-        </ul>
-        <div class="relative">
-            <button class="flex items-center space-x-2 cursor-pointer">
-                <img src="https://picsum.photos/id/1074/50" alt="profile" class="h-12 w-12 rounded-full">
-                <span>jessadakorn fram</span>
-                <i class="fa-solid fa-chevron-down"></i>
-            </button>
-        </div>
-    </div>
 </header>
 
 <div class="flex">
     <!-- Sidebar -->
     <nav class="bg-gray-800 text-white w-64 p-4 h-screen">
         <ul class="space-y-3">
-            <li>
-                <a href="{% url 'boss_dashboard' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-circle"></i><span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'add_pig' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลสุกร</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-cogs"></i><span>โปรไฟล์</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'pig_list' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-book"></i><span>บันทึกรายการสุกรในฟาร์ม</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'pig_queue' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-yellow-500 active:bg-yellow-700">
-                    <i class="fa-solid fa-list"></i><span>ดูรายการคิว</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'home' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span>
-                </a>
-            </li>
+            <li><a href="{% url 'pig_queue' %}" class="flex items-center space-x-3 py-3 hover:bg-yellow-500 active:bg-yellow-700"><i class="fa-solid fa-list"></i><span>ดูรายการคิว</span></a></li>
         </ul>
     </nav>
-    
 
     <!-- Main Content -->
-    <main class="flex-1 p-6">
-        <div class="bg-white shadow-md rounded p-4">
-            <h1 class="text-2xl font-bold mb-4">คิวสุกรที่ต้องผสม</h1>
+<main class="flex-1 p-6">
+    <div class="bg-white shadow-md rounded p-4">
+        <h1 class="text-2xl font-bold mb-4">คิวสุกรที่ต้องผสม</h1>
 
-            <table class="table-auto w-full border-collapse border border-gray-300">
-                <thead>
-                    <tr class="bg-gray-200 text-left">
-                        <th class="border px-4 py-2">หมายเลขสุกร</th>
-                        <th class="border px-4 py-2">ชื่อ</th>
-                        <th class="border px-4 py-2">วันที่เพิ่ม</th>
-                        <th class="border px-4 py-2">การจัดการ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in queue %}
-                    <tr class="hover:bg-gray-100">
-                        <td class="border px-4 py-2">{{ item.pig.pig_id }}</td>
-                        <td class="border px-4 py-2">{{ item.pig.name }}</td>
-                        <td class="border px-4 py-2">{{ item.added_at }}</td>
-                        <td class="border px-4 py-2 flex space-x-2">
-                            <!-- ปุ่มบันทึกการผสม -->
-                            <a 
-                                href="{% url 'record_breeding' item.pig.pig_id %}" 
-                                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                                บันทึกการผสม
-                            </a>
-                            <!-- ปุ่มลบออกจากคิว -->
-                            <form method="POST" action="{% url 'remove_from_queue' item.id %}">
-                                {% csrf_token %}
-                                <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                                    ลบออก
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </main>
+        <table class="table-auto w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-200 text-left">
+                    <th class="border px-4 py-2">หมายเลขสุกร</th>
+                    <th class="border px-4 py-2">ชื่อ</th>
+                    <th class="border px-4 py-2">วันที่เพิ่ม</th>
+                    <th class="border px-4 py-2">การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in queue %}
+                <tr class="hover:bg-gray-100">
+                    <td class="border px-4 py-2">{{ item.pig.pig_id }}</td>
+                    <td class="border px-4 py-2">{{ item.pig.name }}</td>
+                    <td class="border px-4 py-2">{{ item.added_at }}</td>
+                    <td class="border px-4 py-2 flex space-x-2">
+                        <!-- ปุ่มบันทึกการผสม -->
+                        <a href="{% url 'record_breeding' item.pig.pig_id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">บันทึกการผสม</a>
+                        <!-- ปุ่มลบออกจากคิว -->
+                        <form method="POST" action="{% url 'remove_from_queue' item.id %}">
+                            {% csrf_token %}
+                            <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                                ลบออก
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ปุ่มย้อนกลับ -->
+    <button onclick="window.history.back()" class="bg-gray-500 text-white px-4 py-2 mt-4 rounded hover:bg-gray-600">
+        ย้อนกลับ
+    </button>
+
+</main>
+
+
+<!-- Popup แจ้งเตือน -->
+<div id="popup" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center hidden">
+    <div class="bg-white p-6 rounded-lg text-center">
+        <p class="text-lg text-green-500">
+            {% if messages %}
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            {% endif %}
+        </p>
+        <button id="closePopup" class="bg-blue-500 text-white px-4 py-2 mt-4 rounded-lg hover:bg-blue-600">
+            ปิด
+        </button>
+    </div>
 </div>
+
+
+<script>
+    {% if messages %}
+        document.getElementById('popup').classList.remove('hidden');  // แสดง popup
+    {% endif %}
+
+    document.getElementById('closePopup').addEventListener('click', function() {
+        document.getElementById('popup').classList.add('hidden');  // ซ่อน popup
+    });
+</script>
 
 </body>
 </html>
