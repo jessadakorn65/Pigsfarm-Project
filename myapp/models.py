@@ -106,9 +106,6 @@ class BreedingRecord(models.Model):
 
 
 
-
-
-
 class PigQueue(models.Model):
     pig = models.ForeignKey(Pig, on_delete=models.CASCADE, related_name='queues', to_field="pig_id")  
     added_at = models.DateTimeField(auto_now_add=True)

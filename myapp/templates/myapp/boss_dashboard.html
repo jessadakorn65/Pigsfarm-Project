@@ -3,124 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ART</title>
+    <title>Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body class="font-sans bg-gray-100">
+<body class="bg-gray-900 text-white">
 
-<header class="bg-white p-4 flex justify-between items-center shadow-md">
-    <div class="flex items-center space-x-3">
-        <img src="https://i.ibb.co/qkThxX8/logo.png" alt="logo" class="h-10">
-        <span class="text-xl font-semibold">ART</span>
-    </div>
-    <div class="flex items-center space-x-5">
-        <ul class="flex space-x-5 text-gray-700">
-            <li><a href="#"><i class="fa-solid fa-list"></i></a></li>
-            <li><a href="#"><i class="fa-solid fa-envelope"></i></a></li>
-            <li><a href="#"><i class="fa-solid fa-bell"></i></a></li>
-        </ul>
-        <div class="relative">
-            <button class="flex items-center space-x-2 cursor-pointer">
-                <img src="https://picsum.photos/id/1074/50" alt="profile" class="h-12 w-12 rounded-full">
-                <span>jessadakorn fram</span>
-                <i class="fa-solid fa-chevron-down"></i>
-            </button>
-            <ul class="absolute right-0 hidden mt-2 bg-white shadow-lg rounded-md w-48 text-gray-800">
-                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Home</a></li>
-                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Blog</a></li>
-                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Contact</a></li>
-                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Other</a></li>
-                <li><a href="#" class="block px-4 py-2 hover:bg-teal-500">Photo</a></li>
-            </ul>
+    <!-- Sidebar: เมนูข้างๆ -->
+    <aside class="w-64 h-screen bg-gray-800 p-4 fixed">
+        <div class="text-center mb-8">
+            <h5 class="text-lg text-white">ระบบจัดการฟาร์มสุกร</h5>
         </div>
-    </div>
-</header>
-
-<div class="flex">
-    <nav class="bg-gray-800 text-white w-64 p-4 h-screen">
-        <ul class="space-y-3">
-            <li>
-                <a href="{% url 'boss_dashboard' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-circle"></i><span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'add_pig' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-bars"></i><span>เพิ่มข้อมูลสุกร</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-cogs"></i><span>โปรไฟล์</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'pig_list' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-book"></i><span>บันทึกรายการสุกรในฟาร์ม</span>
-                </a>
-            </li>
-            <li>
-                <a href="#" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-magnifying-glass"></i><span>ค้นหาสุกร</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'pig_queue' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-yellow-500 active:bg-yellow-700">
-                    <i class="fa-solid fa-list"></i><span>ดูรายการคิว</span>
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'home' %}" 
-                   class="flex items-center space-x-3 py-3 hover:bg-teal-500 active:bg-teal-700">
-                    <i class="fa-solid fa-right-to-bracket"></i><span>ออกจากระบบ</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
     
+        <!-- ช่องค้นหา -->
+        <div class="search position-relative text-center px-4 py-3 mt-2">
+            <input type="text" class="form-control w-100 border-0 bg-transparent text-white" placeholder="Search here">
+            <i class="fa fa-search position-absolute text-white d-block fs-6" style="top: 22px; right: 10px;"></i>
+        </div>
+    
+        <!-- เมนูหลักใน sidebar -->
+        <ul class="space-y-4">
+            <li><a href="{% url 'boss_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-house text-lg hover:text-white"></i><span class="ml-2">Dashboard</span></a></li>
+            <li><a href="{% url 'add_pig' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-piggy-bank text-lg hover:text-white"></i><span class="ml-2">เพิ่มข้อมูลสุกร</span></a></li>
+            <li><a href="{% url 'pig_list' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-book-open text-lg hover:text-white"></i><span class="ml-2">บันทึกรายการสุกรในฟาร์ม</span></a></li>
+            <li><a href="{% url 'pig_queue' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-list text-lg hover:text-white"></i><span class="ml-2">ดูรายการคิว</span></a></li>
+            <li><a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-sign-out-alt text-lg hover:text-white"></i><span class="ml-2">ออกจากระบบ</span></a></li>
+            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-briefcase text-lg hover:text-white"></i><span class="ml-2">Projects</span></a></li>
+            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-cogs text-lg hover:text-white"></i><span class="ml-2">Settings</span></a></li>
+        </ul>
+    </aside>
     
 
-    <div class="flex-1 p-6">
-        <div class="flex justify-between items-center">
-            <p class="text-gray-600">Welcome to ART</p>
-            <h2 class="text-xl font-medium">Search for your project</h2>
+    <!-- Main Content -->
+    <div class="ml-64 p-6">
+        <!-- ส่วนที่แสดงข้อความทักทาย -->
+        <div class="text-xl mb-6">
+            <h1 class="text-2xl font-bold">Welcome to Dashboard</h1>
+            <p>Hello welcome to your dashboard!</p>
         </div>
 
-        <div class="flex items-center relative mt-4">
-            <input id="site-search" type="search" class="w-72 py-2 px-4 border-2 border-gray-300 rounded-md pl-10" placeholder="Search" aria-label="Search">
-            <!-- เปลี่ยนไอคอนเป็น Font Awesome -->
-            <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        <!-- ส่วนที่แสดงสถิติ -->
+        <!-- ส่วนที่แสดงสถิติ -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- บล็อกที่แสดงจำนวนข้อมูลหมู -->
+   <!-- บล็อกที่แสดงจำนวนข้อมูลหมู -->
+   <div class="bg-gray-700 p-4 rounded-xl flex items-center space-x-4">
+    <style>
+        .icon-container1 {
+            display: inline-flex; 
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%; 
+            background-color: #007bff; /* สีน้ำเงิน */
+            font-size: 24px;
+        }
+
+        .icon-container i {
+            color: white;
+        }
+    </style>
+
+    <!-- ไอคอนหมู -->
+    <div class="icon-container1">
+        <i class="fa-solid fa-piggy-bank"></i>
+    </div>
+
+    <!-- ข้อความ -->
+    <div>
+        <h3 class="text-3xl text-yellow-400">{{ total_pigs }}</h3> <!-- ขนาดตัวเลขใหญ่ขึ้นและเปลี่ยนสี -->
+        <p class="text-sm text-gray-400">จำนวนหมูในฟาร์ม</p>
+    </div>
+   </div>
+
+    <!-- คิว -->
+    <div class="bg-gray-700 p-4 rounded-xl flex items-center space-x-4">
+        <style>
+            .icon-container2 {
+                display: inline-flex; /* ทำให้ไอคอนอยู่ในบล็อกเดียวกัน */
+                justify-content: center;
+                align-items: center;
+                width: 50px; /* กำหนดขนาดของวงกลม */
+                height: 50px; /* กำหนดขนาดของวงกลม */
+                border-radius: 50%; /* ทำให้วงกลม */
+                background-color: #e91e63; /* สีพื้นหลังชมพู */
+                font-size: 24px; /* ขนาดของไอคอน */
+            }
+
+            .icon-container i {
+                color: white; /* ทำให้ไอคอนเป็นสีขาว */
+            }
+        </style>
+
+        <!-- ไอคอนคิวหมู -->
+        <div class="icon-container2">
+            <i class="fa-solid fa-bars-progress"></i> <!-- ไอคอนคิวหมู -->
         </div>
 
-        <div class="grid grid-cols-4 gap-4 mt-8">
-            
-            
-            <div class="bg-white p-6 rounded-lg shadow-md">Item 2</div>
-            <div class="bg-white p-6 rounded-lg shadow-md">Item 3</div>
-            <div class="bg-white p-6 rounded-lg shadow-md">Item 4</div>
+        <!-- ข้อความ -->
+        <div>
+            <h3 class="text-3xl text-yellow-400">{{ pigs_in_queue }}</h3> <!-- ขนาดตัวเลขใหญ่ขึ้นและเปลี่ยนสี -->
+            <p class="text-sm text-gray-400">สุกรที่ยังอยู่ในคิว</p>
         </div>
     </div>
-</div>
 
-<script>
-    document.querySelector('.main-top_button').addEventListener('click', function() {
-        document.querySelector('.menu-open').classList.toggle('hidden');
-    });
+    
+</section>
 
-    // JavaScript for handling the search functionality
-    const searchInput = document.getElementById('site-search');
-    searchInput.addEventListener('input', function() {
-        console.log('Searching for:', searchInput.value);
-    });
-</script>
+
+        <!-- ส่วนที่แสดงกราฟ -->
+<!-- ส่วนที่แสดงสถิติ -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- แสดงกราฟการผสมหมู -->
+    <div class="bg-gray-700 p-4 rounded-xl">
+        <h3 class="text-xl mb-4">สถิติการผสมหมู</h3>
+        <canvas id="breedingChart" width="350" height="200"></canvas> <!-- ขนาดกราฟลดลง -->
+        <script>
+            const ctx2 = document.getElementById('breedingChart').getContext('2d');
+            const breedingStats = JSON.parse('{{ breeding_stats|escapejs }}');
+            const months = breedingStats.map(item => item.month.substring(0, 7)); 
+            const counts = breedingStats.map(item => item.count); 
+
+            const chart2 = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'จำนวนการผสมหมู',
+                        data: counts,
+                        borderColor: 'rgba(255, 99, 132, 1)',  // เปลี่ยนสีเส้นกราฟให้เด่นขึ้น
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',  // เปลี่ยนสีพื้นหลังของกราฟ
+                        fill: true  // เปลี่ยนกราฟเป็นเติมสีพื้น
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: 'white',  // เปลี่ยนสีตัวเลขของแกน X
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: 'white',  // เปลี่ยนสีตัวเลขของแกน Y
+                                beginAtZero: true,  // เริ่มต้นที่ 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `จำนวน: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+
+            <!-- แผนภูมิวงกลมสถานะหมู -->
+            <div class="bg-gray-700 p-4 rounded-xl max-h-50">
+                <h3 class="text-xl mb-4">สถานะหมู</h3>
+                <canvas id="statusPieChart" width="3" height="300"></canvas> <!-- ลดขนาดของแผนภูมิวงกลม -->
+                <script>
+                    const pigsNotBred = {{ pigs_not_bred }};
+                    const pigsReady = {{ pigs_ready }};
+                    const pigsBred = {{ pigs_bred }};
+                    const pigsDelivered = {{ pigs_delivered }};
+                    
+                    const ctx = document.getElementById('statusPieChart').getContext('2d');
+                    
+                    const statusChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['ยังไม่ผสม', 'พร้อมผสม', 'ผสมแล้ว', 'คลอดแล้ว'],
+                            datasets: [{
+                                data: [pigsNotBred, pigsReady, pigsBred, pigsDelivered],
+                                backgroundColor: ['#f39c12', '#27ae60', '#2980b9', '#e74c3c'],
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return `${tooltipItem.label}: ${tooltipItem.raw} ตัว`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </section>
+        <div>
+            <h3 class="text-xl mb-4">สถิติลูกสุกรในฟาร์ม</h3>
+            <p>จำนวนลูกสุกรที่รอดชีวิต: {{ total_alive_piglets }}</p>
+            <p>จำนวนลูกสุกรที่ตาย: {{ total_dead_piglets }}</p>
+            <p>จำนวนลูกสุกรที่พิการ: {{ total_deformed_piglets }}</p>
+        </div>
+        
 
 </body>
 </html>

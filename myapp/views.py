@@ -95,10 +95,17 @@ def record_breeding(request, pig_id):
 def breeding_history(request, pig_id):
     pig = get_object_or_404(Pig, pig_id=pig_id)  # ใช้ pig_id เป็น primary key
     breeding_records = pig.breeding_records.all()  # ดึงข้อมูลประวัติการผสมทั้งหมดที่เชื่อมโยงกับหมูตัวนี้
+
+    # ดึงบันทึกการคลอดล่าสุด
+    latest_breeding_record = breeding_records.order_by('-delivery_date').first()
+
     return render(request, 'myapp/breeding_history.html', {
         'pig': pig,
-        'breeding_records': breeding_records
+        'breeding_records': breeding_records,
+        'latest_breeding_record': latest_breeding_record  # ส่งบันทึกการคลอดล่าสุด
     })
+
+    
 
 def delete_breeding_record(request, record_id):
     record = get_object_or_404(BreedingRecord, id=record_id)
@@ -307,3 +314,75 @@ def export_pig(request, pig_id):
         messages.error(request, "ไม่สามารถส่งออกหมูที่ไม่อยู่ในสถานะ 'คลอดแล้ว' ได้!")
 
     return redirect('breeding_history', pig_id=pig.pig_id)
+
+from django.contrib import messages
+from django.shortcuts import render
+
+# ฟังก์ชันแสดงข้อความ
+def some_view(request):
+    # สร้างข้อความที่จะแสดงบนหน้าเว็บ
+    messages.success(request, "การดำเนินการสำเร็จ!")  # หรือใช้ messages.warning, messages.error, etc.
+    
+    # เรนเดอร์กลับไปที่หน้า pig_queue หรือหน้าอื่น ๆ
+    return render(request, 'myapp/pig_queue.html')
+
+
+
+# --------------------------------dashboard --------------------------------
+from django.shortcuts import render
+from django.db.models import Count
+from django.db.models import Count, Sum
+from .models import Pig, PigQueue, BreedingRecord
+from django.db.models.functions import TruncMonth
+import json
+
+@login_required
+def boss_dashboard(request):
+    # ดึงจำนวนหมูทั้งหมด
+    total_pigs = Pig.objects.count()
+
+    # ดึงจำนวนหมูในแต่ละสถานะ
+    pigs_not_bred = Pig.objects.filter(status='not_bred').count()
+    pigs_ready = Pig.objects.filter(status='ready').count()
+    pigs_bred = Pig.objects.filter(status='bred').count()
+    pigs_delivered = Pig.objects.filter(status='delivered').count()
+
+    # ดึงจำนวนหมูในคิว
+    pigs_in_queue = PigQueue.objects.count()  # จำนวนหมูในคิว
+
+    # นับจำนวนลูกสุกรที่รอดชีวิตจากการคลอด
+    total_alive_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_alive=Sum('alive_piglets'))['total_alive'] or 0
+
+    # นับจำนวนลูกสุกรที่ตาย
+    total_dead_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_dead=Sum('dead_piglets'))['total_dead'] or 0
+
+    # นับจำนวนลูกสุกรที่พิการ
+    total_deformed_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_deformed=Sum('deformed_piglets'))['total_deformed'] or 0
+
+    # ดึงข้อมูลการผสมหมูในแต่ละเดือน
+    breeding_stats = BreedingRecord.objects.annotate(month=TruncMonth('breeding_date')) \
+                                           .values('month') \
+                                           .annotate(count=Count('id')) \
+                                           .order_by('month')
+
+    # แปลงวันที่ใน `breeding_stats` ให้เป็นสตริงก่อนส่งไปยังเทมเพลต
+    for stat in breeding_stats:
+        stat['month'] = stat['month'].strftime('%Y-%m')  # แปลงวันที่เป็นสตริงในรูปแบบ 'YYYY-MM'
+
+    # แปลงข้อมูลให้เป็น JSON
+    breeding_stats_json = json.dumps(list(breeding_stats))
+
+    # ส่งข้อมูลไปที่เทมเพลต
+    return render(request, 'myapp/boss_dashboard.html', {
+        'total_pigs': total_pigs,
+        'pigs_not_bred': pigs_not_bred,
+        'pigs_ready': pigs_ready,
+        'pigs_bred': pigs_bred,
+        'pigs_delivered': pigs_delivered,
+        'pigs_in_queue': pigs_in_queue,  # ส่งข้อมูลจำนวนหมูในคิว
+        'total_alive_piglets': total_alive_piglets,  # ส่งข้อมูลจำนวนลูกสุกรที่รอดชีวิต
+        'total_dead_piglets': total_dead_piglets,  # ส่งข้อมูลจำนวนลูกสุกรที่ตาย
+        'total_deformed_piglets': total_deformed_piglets,  # ส่งข้อมูลจำนวนลูกสุกรที่พิการ
+        'breeding_stats': breeding_stats_json  # ส่งข้อมูลการผสมหมูในแต่ละเดือน
+    })
+

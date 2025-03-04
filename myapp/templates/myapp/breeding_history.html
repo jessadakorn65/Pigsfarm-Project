@@ -22,13 +22,13 @@
                 <th class="border border-gray-300 px-4 py-2">พิการ</th>
                 <th class="border border-gray-300 px-4 py-2">รวม</th>
                 <th class="border border-gray-300 px-4 py-2">หมายเหตุ</th>
-                <th class="border border-gray-300 px-4 py-2">ส่งออก</th>  <!-- คอลัมน์ใหม่ -->
+                <th class="border border-gray-300 px-4 py-2">ส่งออก</th> <!-- คอลัมน์ใหม่ -->
                 <th class="border border-gray-300 px-4 py-2">จัดการ</th>
             </tr>
         </thead>
         <tbody>
             {% for record in breeding_records %}
-            <tr class="text-center hover:bg-gray-100">
+            <tr class="text-center hover:bg-gray-100 {% if record == latest_breeding_record %} border-4 border-blue-500 {% else %} border-t border-gray-300 {% endif %} p-2">
                 <td class="border border-gray-300 px-4 py-2">{{ record.breeding_date }}</td>
                 <td class="border border-gray-300 px-4 py-2">{{ record.semen_id }}</td>
                 <td class="border border-gray-300 px-4 py-2">{{ record.delivery_date|default:"-" }}</td>
@@ -43,15 +43,15 @@
                     {{ record.notes|default:"-" }}
                 </td>
                 <td class="border border-gray-300 px-4 py-2">
-                    {% if pig.status == 'delivered' %}
-                    <form action="{% url 'export_pig' pig.pig_id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-                            ส่งออก
-                        </button>
-                    </form>
+                    {% if record == latest_breeding_record %}
+                        <form action="{% url 'export_pig' pig.pig_id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                                ส่งออก
+                            </button>
+                        </form>
                     {% else %}
-                        ส่งออกแล้ว
+                        ส่งออกไปแล้ว
                     {% endif %}
                 </td>
                 <td class="border border-gray-300 px-4 py-2">

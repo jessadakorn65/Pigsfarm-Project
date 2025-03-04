@@ -10,6 +10,7 @@ urlpatterns = [
     path('login/', views.custom_login, name='login'),  # เส้นทางสำหรับเข้าสู่ระบบ (custom login)
     path('register/', views.register, name='register'),  # เส้นทางสำหรับสมัครสมาชิก
     path('boss_dashboard/', views.boss_dashboard, name='boss_dashboard'),  # เส้นทางสำหรับแดชบอร์ดเจ้านาย
+    path('boss_dashboard/', views.boss_dashboard, name='boss_dashboard'),
     path('employee_dashboard/', views.employee_dashboard, name='employee_dashboard'),  # เส้นทางสำหรับแดชบอร์ดพนักงาน
     path('pigs/', views.pig_list, name='pig_list'),
     path('add_pig/', views.add_pig, name='add_pig'),
@@ -28,4 +29,7 @@ urlpatterns = [
     path('check_heat_status/<str:pig_id>/', views.check_heat_status, name='check_heat_status'),
     path('reset_mother_status/<str:pig_id>/', views.reset_mother_status, name='reset_mother_status'),
     path('export_pig/<str:pig_id>/', views.export_pig, name='export_pig'),
+
+   
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-900 text-white">
+
+    <!-- Sidebar: เมนูข้างๆ -->
+    <aside class="w-64 h-screen bg-gray-800 p-4 fixed">
+        <div class="text-center mb-8">
+            <img src="https://uniim1.shutterfly.com/ng/services/mediarender/THISLIFE/021036514417/media/23148907008/medium/1501685726/enhance" class="w-16 h-16 rounded-full mx-auto mb-4" alt="User">
+            <h5 class="text-lg text-white">Jone Doe</h5>
+            <p class="text-sm text-gray-400">Lorem ipsum dolor sit amet consectetur.</p>
+        </div>
+    
+        <!-- ช่องค้นหา -->
+        <div class="search position-relative text-center px-4 py-3 mt-2">
+            <input type="text" class="form-control w-100 border-0 bg-transparent text-white" placeholder="Search here">
+            <i class="fa fa-search position-absolute text-white d-block fs-6" style="top: 22px; right: 10px;"></i>
+        </div>
+    
+        <!-- เมนูหลักใน sidebar -->
+        <ul class="space-y-4">
+            <li><a href="{% url 'boss_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-house text-lg hover:text-white"></i><span class="ml-2">Dashboard</span></a></li>
+            <li><a href="{% url 'add_pig' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-piggy-bank text-lg hover:text-white"></i><span class="ml-2">เพิ่มข้อมูลสุกร</span></a></li>
+            <li><a href="{% url 'pig_list' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-book-open text-lg hover:text-white"></i><span class="ml-2">บันทึกรายการสุกรในฟาร์ม</span></a></li>
+            <li><a href="{% url 'pig_queue' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-list text-lg hover:text-white"></i><span class="ml-2">ดูรายการคิว</span></a></li>
+            <li><a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-sign-out-alt text-lg hover:text-white"></i><span class="ml-2">ออกจากระบบ</span></a></li>
+            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-briefcase text-lg hover:text-white"></i><span class="ml-2">Projects</span></a></li>
+            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
+                <i class="fa-solid fa-cogs text-lg hover:text-white"></i><span class="ml-2">Settings</span></a></li>
+        </ul>
+    </aside>
+    
+
+    <!-- Main Content -->
+    <div class="ml-64 p-6">
+        <!-- ส่วนที่แสดงข้อความทักทาย -->
+        <div class="text-xl mb-6">
+            <h1 class="text-2xl font-bold">Welcome to Dashboard</h1>
+            <p>Hello welcome to your dashboard!</p>
+        </div>
+
+        <!-- ส่วนที่แสดงสถิติ -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <!-- บล็อกที่แสดงจำนวนข้อมูลเช่น Email, Projects, Users, Product Sales -->
+            <div class="bg-gray-700 p-4 rounded-xl">
+                <i class="fa fa-envelope text-white text-2xl"></i>
+                <h3 class="text-xl">{{ total_pigs }}</h3>
+                <p class="text-sm text-gray-400">จำนวนหมูในฟาร์ม</p>
+            </div>
+            <div class="bg-gray-700 p-4 rounded-xl">
+                <i class="fa fa-file-alt text-white text-2xl"></i>
+                <h3 class="text-xl">34</h3>
+                <p class="text-sm text-gray-400">Projects</p>
+            </div>
+            <div class="bg-gray-700 p-4 rounded-xl">
+                <i class="fa fa-users text-white text-2xl"></i>
+                <h3 class="text-xl">5,245</h3>
+                <p class="text-sm text-gray-400">Users</p>
+            </div>
+            <div class="bg-gray-700 p-4 rounded-xl">
+                <i class="fa fa-shopping-cart text-white text-2xl"></i>
+                <h3 class="text-xl">5,154</h3>
+                <p class="text-sm text-gray-400">Product Sales</p>
+            </div>
+        </section>
+
+        <!-- ส่วนที่แสดงกราฟ -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- กราฟแสดงข้อมูล -->
+            <div class="bg-gray-700 p-4 rounded-xl">
+                <h3 class="text-xl mb-4">Chart title number one</h3>
+                <canvas id="myChart1"></canvas>
+            </div>
+            <div class="bg-gray-700 p-4 rounded-xl">
+                <h3 class="text-xl mb-4">Chart title number two</h3>
+                <canvas id="breedingChart" width="400" height="200"></canvas>
+                <script>
+                    // กำหนดตัวแปร ctx ให้เชื่อมต่อกับ canvas
+                    const ctx = document.getElementById('breedingChart').getContext('2d');
+                    // ข้อมูลการผสมหมูที่ถูกส่งมาจาก Django (ต้องเป็น JSON)
+                    const breedingStats = JSON.parse('{{ breeding_stats|escapejs }}');
+                    const months = breedingStats.map(item => item.month.substring(0, 7)); // ดึงเดือน
+                    const counts = breedingStats.map(item => item.count); // ดึงจำนวนการผสม
+
+                    // สร้างกราฟ
+                    const chart = new Chart(ctx, {
+                        type: 'line',  // กราฟประเภท line chart
+                        data: {
+                            labels: months,  // ป้ายชื่อเดือน
+                            datasets: [{
+                                label: 'จำนวนการผสมหมู',  // ชื่อของกราฟ
+                                data: counts,  // ข้อมูลจำนวนการผสม
+                                borderColor: 'rgba(75, 192, 192, 1)',  // สีเส้นกราฟ
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',  // สีพื้นหลังกราฟ
+                                fill: false  // กราฟไม่เติมสีพื้น
+                            }]
+                        },
+                        options: {
+                            responsive: true,  // ทำให้กราฟตอบสนองต่อขนาดหน้าจอ
+                            plugins: {
+                                legend: { position: 'top' },  // แสดง legend ด้านบน
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return `จำนวน: ${tooltipItem.raw}`;  // แสดงข้อความเมื่อ hover ที่กราฟ
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                </script>
+            </div>
+        </section>
+
+        <!-- ส่วนที่แสดงข้อมูลผู้ใช้ -->
+        <section class="mt-6">
+            <h3 class="text-xl mb-4">User Information</h3>
+            <div class="bg-gray-700 p-4 rounded-xl mb-4">
+                <p class="text-xl">Joge Lucky</p>
+                <p class="text-gray-400">Lorem ipsum dolor sit amet consectetur elit.</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript to handle charts -->
+    <script>
+        // กำหนดข้อมูลกราฟที่แสดงในหน้า Dashboard
+        var ctx1 = document.getElementById('myChart1').getContext('2d');
+        var myChart1 = new Chart(ctx1, {
+            type: 'bar',  // กราฟแบบ bar
+            data: {
+                labels: ['January', 'February', 'March', 'April'], // ชื่อเดือน
+                datasets: [{
+                    label: 'Emails',
+                    data: [10, 20, 30, 40],  // ข้อมูลในแต่ละเดือน
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',  // สีพื้นหลัง
+                    borderColor: 'rgba(75, 192, 192, 1)',  // สีเส้นขอบ
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        var ctx2 = document.getElementById('myChart2').getContext('2d');
+        var myChart2 = new Chart(ctx2, {
+            type: 'line',  // กราฟแบบ line
+            data: {
+                labels: ['January', 'February', 'March', 'April'],  // ชื่อเดือน
+                datasets: [{
+                    label: 'Projects',
+                    data: [5, 10, 15, 20],  // ข้อมูลในแต่ละเดือน
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',  // สีพื้นหลัง
+                    borderColor: 'rgba(153, 102, 255, 1)',  // สีเส้นขอบ
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+</body>
+</html>
