@@ -1,0 +1,21 @@
+
+  <div class="profile-container">
+    <h2 class="text-3xl font-bold mb-4">โปรไฟล์ของคุณ</h2>
+    <p><strong>ชื่อผู้ใช้:</strong> {{ user.username }}</p>
+    <p><strong>อีเมล:</strong> {{ user.email }}</p>
+    <p><strong>บทบาท:</strong> {{ user.get_role_display }}</p>
+    <p><strong>เลขบัตรประชาชน:</strong> {{ user.id_card }}</p>
+    <p><strong>เบอร์โทรศัพท์:</strong> {{ user.phone_number }}</p>
+    <p><strong>รูปโปรไฟล์:</strong> <img src="{{ user.image.url }}" alt="Profile Image" class="w-32 h-32 rounded-full"></p>
+    
+    <!-- ปุ่มสำหรับดูโปรไฟล์ -->
+    <div class="mt-4">
+      <a href="{% url 'profile' %}" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-200">ดูโปรไฟล์</a>
+    </div>
+
+    <!-- ปุ่มสำหรับแก้ไขโปรไฟล์ -->
+    <div class="mt-4">
+      <a href="{% url 'edit_profile' %}" class="bg-green-500 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-colors duration-200">แก้ไขโปรไฟล์</a>
+    </div>
+  </div>
+

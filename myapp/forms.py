@@ -1,8 +1,6 @@
 from django import forms
 from .models import CustomUser
-
-from django import forms
-from .models import CustomUser
+from .models import Pig  # นำเข้าโมเดล Pig จาก models.py
 
 # ฟอร์มสร้างผู้ใช้ใหม่ที่ใช้ CustomUser model
 class CustomUserCreationForm(forms.ModelForm):
@@ -14,10 +12,13 @@ class CustomUserCreationForm(forms.ModelForm):
     id_card = forms.CharField(max_length=13, required=False, widget=forms.TextInput(attrs={'placeholder': 'เลขบัตรประชาชน'}))
     phone_number = forms.CharField(max_length=10, required=False, widget=forms.TextInput(attrs={'placeholder': 'เบอร์โทร'}))
 
+    # ฟิลด์รูปโปรไฟล์
+    profile_picture = forms.ImageField(required=False)  # เพิ่มฟิลด์สำหรับการอัปโหลดรูปภาพโปรไฟล์
+
     # Meta class สำหรับกำหนดฟิลด์ที่ต้องการจากโมเดล CustomUser
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'password', 'password_confirm', 'role', 'id_card', 'phone_number')
+        fields = ('username', 'email', 'password', 'password_confirm', 'role', 'id_card', 'phone_number', 'profile_picture')
 
     # ฟังก์ชัน clean สำหรับตรวจสอบข้อมูลที่กรอกเข้ามา
     def clean(self):
@@ -30,23 +31,26 @@ class CustomUserCreationForm(forms.ModelForm):
             raise forms.ValidationError("Passwords do not match.")
         
         return cleaned_data
+
     
 
 from django import forms
-from .models import Pig, BreedingRecord
+from .models import Pig  # นำเข้าโมเดล Pig จากไฟล์ models.py
 
 class PigForm(forms.ModelForm):
     class Meta:
-        model = Pig
-        fields = ['pig_id', 'name', 'status', 'zone', 'address_lock', 'image']
+        model = Pig  # ใช้โมเดล Pig
+        fields = ['pig_id', 'name', 'status', 'weight', 'address_lock', 'image']  # ใช้ฟิลด์ที่ต้องการ
         widgets = {
             'pig_id': forms.TextInput(attrs={'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
-            'zone': forms.TextInput(attrs={'class': 'form-control'}),
+            'weight': forms.NumberInput(attrs={'class': 'form-control'}),  # ใช้ NumberInput สำหรับน้ำหนัก
             'address_lock': forms.TextInput(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
+
+
 
 from django import forms
 from .models import BreedingRecord
@@ -95,3 +99,13 @@ class CheckHeatStatusForm(forms.Form):
     ]
     is_genital_swollen = forms.ChoiceField(choices=GENITAL_CHOICES, widget=forms.RadioSelect, label='อวัยวะเพศบวมไหม?')
     is_in_heat = forms.ChoiceField(choices=GENITAL_CHOICES, widget=forms.RadioSelect, label='ขี่หลังแล้วมีอาการฮีสติดสัดไหม?')
+
+
+from django import forms
+from .models import CustomUser
+
+class CustomUserForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'email', 'profile_picture', 'role', 'id_card', 'phone_number']
+

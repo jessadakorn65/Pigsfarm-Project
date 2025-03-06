@@ -7,222 +7,255 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body class="bg-gray-900 text-white">
 
-    <!-- Sidebar: เมนูข้างๆ -->
-    <aside class="w-64 h-screen bg-gray-800 p-4 fixed">
-        <div class="text-center mb-8">
-            <h5 class="text-lg text-white">ระบบจัดการฟาร์มสุกร</h5>
-        </div>
-    
-        <!-- ช่องค้นหา -->
-        <div class="search position-relative text-center px-4 py-3 mt-2">
-            <input type="text" class="form-control w-100 border-0 bg-transparent text-white" placeholder="Search here">
-            <i class="fa fa-search position-absolute text-white d-block fs-6" style="top: 22px; right: 10px;"></i>
-        </div>
-    
-        <!-- เมนูหลักใน sidebar -->
-        <ul class="space-y-4">
-            <li><a href="{% url 'boss_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
-                <i class="fa-solid fa-house text-lg hover:text-white"></i><span class="ml-2">Dashboard</span></a></li>
-            <li><a href="{% url 'add_pig' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
-                <i class="fa-solid fa-piggy-bank text-lg hover:text-white"></i><span class="ml-2">เพิ่มข้อมูลสุกร</span></a></li>
-            <li><a href="{% url 'pig_list' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
-                <i class="fa-solid fa-book-open text-lg hover:text-white"></i><span class="ml-2">บันทึกรายการสุกรในฟาร์ม</span></a></li>
-            <li><a href="{% url 'pig_queue' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
-                <i class="fa-solid fa-list text-lg hover:text-white"></i><span class="ml-2">ดูรายการคิว</span></a></li>
-            <li><a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
-                <i class="fa-solid fa-sign-out-alt text-lg hover:text-white"></i><span class="ml-2">ออกจากระบบ</span></a></li>
-            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
-                <i class="fa-solid fa-briefcase text-lg hover:text-white"></i><span class="ml-2">Projects</span></a></li>
-            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
-                <i class="fa-solid fa-cogs text-lg hover:text-white"></i><span class="ml-2">Settings</span></a></li>
-        </ul>
-    </aside>
-    
-
-    <!-- Main Content -->
-    <div class="ml-64 p-6">
-        <!-- ส่วนที่แสดงข้อความทักทาย -->
-        <div class="text-xl mb-6">
-            <h1 class="text-2xl font-bold">Welcome to Dashboard</h1>
-            <p>Hello welcome to your dashboard!</p>
-        </div>
-
-        <!-- ส่วนที่แสดงสถิติ -->
-        <!-- ส่วนที่แสดงสถิติ -->
-<section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <!-- บล็อกที่แสดงจำนวนข้อมูลหมู -->
-   <!-- บล็อกที่แสดงจำนวนข้อมูลหมู -->
-   <div class="bg-gray-700 p-4 rounded-xl flex items-center space-x-4">
     <style>
-        .icon-container1 {
-            display: inline-flex; 
+        .legend-text {
+            font-weight: bold;
+            font-size: 16px;
+            color: #ffffff;
+            padding: 8px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.3);
+            box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .icon-container1, .icon-container2 {
+            display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%; 
-            background-color: #007bff; /* สีน้ำเงิน */
-            font-size: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 28px;
+            color: white;
+        }
+
+        .icon-container1 {
+            background-color: #007bff;
+        }
+
+        .icon-container2 {
+            background-color: #e91e63;
         }
 
         .icon-container i {
             color: white;
         }
     </style>
+</head>
+<body class="bg-gray-900 text-white">
 
-    <!-- ไอคอนหมู -->
-    <div class="icon-container1">
-        <i class="fa-solid fa-piggy-bank"></i>
-    </div>
-
-    <!-- ข้อความ -->
-    <div>
-        <h3 class="text-3xl text-yellow-400">{{ total_pigs }}</h3> <!-- ขนาดตัวเลขใหญ่ขึ้นและเปลี่ยนสี -->
-        <p class="text-sm text-gray-400">จำนวนหมูในฟาร์ม</p>
-    </div>
-   </div>
-
-    <!-- คิว -->
-    <div class="bg-gray-700 p-4 rounded-xl flex items-center space-x-4">
-        <style>
-            .icon-container2 {
-                display: inline-flex; /* ทำให้ไอคอนอยู่ในบล็อกเดียวกัน */
-                justify-content: center;
-                align-items: center;
-                width: 50px; /* กำหนดขนาดของวงกลม */
-                height: 50px; /* กำหนดขนาดของวงกลม */
-                border-radius: 50%; /* ทำให้วงกลม */
-                background-color: #e91e63; /* สีพื้นหลังชมพู */
-                font-size: 24px; /* ขนาดของไอคอน */
-            }
-
-            .icon-container i {
-                color: white; /* ทำให้ไอคอนเป็นสีขาว */
-            }
-        </style>
-
-        <!-- ไอคอนคิวหมู -->
-        <div class="icon-container2">
-            <i class="fa-solid fa-bars-progress"></i> <!-- ไอคอนคิวหมู -->
+    <!-- Sidebar: เมนูข้างๆ -->
+    <aside class="w-64 h-screen bg-gray-800 p-6 fixed">
+        <div class="text-center mb-8">
+            <h5 class="text-lg text-white">ระบบจัดการฟาร์มสุกร</h5>
         </div>
-
-        <!-- ข้อความ -->
-        <div>
-            <h3 class="text-3xl text-yellow-400">{{ pigs_in_queue }}</h3> <!-- ขนาดตัวเลขใหญ่ขึ้นและเปลี่ยนสี -->
-            <p class="text-sm text-gray-400">สุกรที่ยังอยู่ในคิว</p>
-        </div>
-    </div>
-
     
+        <!-- ช่องค้นหา -->
+        <div class="search text-center px-4 py-3 mt-4">
+            <input type="text" class="form-control w-100 border-0 bg-transparent text-white" placeholder="Search here">
+            <i class="fa fa-search position-absolute text-white d-block fs-6" style="top: 22px; right: 10px;"></i>
+        </div>
+    
+        <!-- เมนูหลักใน sidebar -->
+        <ul class="space-y-6 mt-6">
+            <li><a href="{% url 'boss_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out">
+                <i class="fa-solid fa-house text-lg hover:text-white"></i><span class="ml-2">Dashboard</span></a></li>
+            <li><a href="{% url 'add_pig' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out">
+                <i class="fa-solid fa-piggy-bank text-lg hover:text-white"></i><span class="ml-2">เพิ่มข้อมูลสุกร</span></a></li>
+            <li><a href="{% url 'pig_list' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out">
+                <i class="fa-solid fa-book-open text-lg hover:text-white"></i><span class="ml-2">บันทึกรายการสุกรในฟาร์ม</span></a></li>
+            <li><a href="{% url 'pig_queue' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out">
+                <i class="fa-solid fa-list text-lg hover:text-white"></i><span class="ml-2">ดูรายการคิว</span></a></li>
+            <li><a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out">
+                <i class="fa-solid fa-sign-out-alt text-lg hover:text-white"></i><span class="ml-2">ออกจากระบบ</span></a></li>
+        </ul>
+    </aside>
+    
+    <!-- Main Content -->
+    <div class="ml-64 p-6">
+        <!-- ส่วนที่แสดงข้อความทักทาย -->
+        <div class="text-xl mb-8">
+            <h1 class="text-3xl font-bold text-white">Welcome to Dashboard</h1>
+            <p class="text-white">Hello, welcome to your dashboard! All the statistics and data are at your fingertips.</p>
+        </div>
+
+        <div class="bg-blue-100 p-6 rounded-lg shadow-lg mb-6">
+            <div class="flex items-center space-x-4">
+                <!-- ข้อความทักทาย -->
+                <div>
+                    <h1 class="text-2xl font-semibold text-gray-700">สวัสดี, {{ user.username }} 👋</h1>
+                    <p class="text-lg text-gray-500">ยินดีต้อนรับเข้าสู่ระบบจัดการฟาร์มสัตว์เลี้ยง</p>
+                    <p class="text-sm text-gray-400">บทบาท: {{ user.get_role_display }}</p>
+                    <p class="text-sm text-gray-400">วันที่: {{ today_date }}</p>
+                </div>
+                    
+            </div>
+
+        </div>
+        
+        
+
+        <!-- ส่วนที่แสดงสถิติ -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <!-- จำนวนหมูทั้งหมด -->
+    <div class="bg-gray-700 p-6 rounded-lg flex items-center space-x-6 shadow-lg hover:shadow-2xl transition-shadow border-4 border-blue-500">
+        <div class="icon-container1">
+            <i class="fa-solid fa-piggy-bank"></i>
+        </div>
+        <div>
+            <h3 class="text-3xl text-yellow-400">{{ total_pigs }}</h3>
+            <p class="text-sm text-gray-400">จำนวนหมูในฟาร์ม</p>
+        </div>
+    </div>
+
+<!-- จำนวนสุกรในคิว -->
+<div class="bg-gray-700 p-6 rounded-lg flex items-center space-x-6 shadow-lg hover:shadow-2xl transition-shadow border-4 border-pink-500">
+    <div class="icon-container2">
+        <i class="fa-solid fa-bars-progress"></i>
+    </div>
+    <div>
+        <h3 class="text-3xl text-yellow-400">{{ pigs_in_queue }}</h3>
+        <p class="text-sm text-gray-400">สุกรที่ยังอยู่ในคิว</p>
+    </div>
+</div>
+
 </section>
 
 
-        <!-- ส่วนที่แสดงกราฟ -->
-<!-- ส่วนที่แสดงสถิติ -->
-<section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-    <!-- แสดงกราฟการผสมหมู -->
-    <div class="bg-gray-700 p-4 rounded-xl">
-        <h3 class="text-xl mb-4">สถิติการผสมหมู</h3>
-        <canvas id="breedingChart" width="350" height="200"></canvas> <!-- ขนาดกราฟลดลง -->
-        <script>
-            const ctx2 = document.getElementById('breedingChart').getContext('2d');
-            const breedingStats = JSON.parse('{{ breeding_stats|escapejs }}');
-            const months = breedingStats.map(item => item.month.substring(0, 7)); 
-            const counts = breedingStats.map(item => item.count); 
+        <!-- การ์ดแสดงสถิติลูกสุกรในฟาร์ม -->
+        <section class="flex flex-col md:flex-row gap-6 mb-6">
+            <!-- ส่วนแสดงการ์ดสถิติลูกสุกร -->
 
-            const chart2 = new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'จำนวนการผสมหมู',
-                        data: counts,
-                        borderColor: 'rgba(255, 99, 132, 1)',  // เปลี่ยนสีเส้นกราฟให้เด่นขึ้น
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',  // เปลี่ยนสีพื้นหลังของกราฟ
-                        fill: true  // เปลี่ยนกราฟเป็นเติมสีพื้น
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            ticks: {
-                                color: 'white',  // เปลี่ยนสีตัวเลขของแกน X
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                color: 'white',  // เปลี่ยนสีตัวเลขของแกน Y
-                                beginAtZero: true,  // เริ่มต้นที่ 0
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return `จำนวน: ${tooltipItem.raw}`;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        </script>
+<div class="max-w-4xl mx-auto p-6 bg-gray-800 rounded-lg shadow-2xl hover:shadow-3xl transition-shadow duration-300 flex-1 mb-6">
+    <h3 class="text-xl text-white mb-4">สถิติลูกสุกรในฟาร์ม</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- จำนวนลูกสุกรที่รอดชีวิต -->
+        <div class="flex items-center bg-green-600 p-4 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 col-span-1 lg:col-span-1">
+            <i class="fas fa-heartbeat text-white text-2xl mr-4"></i>
+            <div>
+                <p class="text-white font-semibold">จำนวนลูกสุกรที่รอดชีวิต</p>
+                <p class="text-lg text-white">{{ total_alive_piglets }}</p>
+            </div>
+        </div>
+
+        <!-- จำนวนลูกสุกรที่ตาย -->
+        <div class="flex items-center bg-red-600 p-4 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 col-span-1 lg:col-span-1">
+            <i class="fas fa-skull-crossbones text-white text-2xl mr-4"></i>
+            <div>
+                <p class="text-white font-semibold">จำนวนลูกสุกรที่ตาย</p>
+                <p class="text-lg text-white">{{ total_dead_piglets }}</p>
+            </div>
+        </div>
+
+        <!-- จำนวนลูกสุกรที่พิการ -->
+        <div class="flex items-center bg-yellow-600 p-4 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 col-span-1 lg:col-span-1">
+            <i class="fas fa-exclamation-triangle text-white text-2xl mr-4"></i>
+            <div>
+                <p class="text-white font-semibold">จำนวนลูกสุกรที่พิการ</p>
+                <p class="text-lg text-white">{{ total_deformed_piglets }}</p>
+            </div>
+        </div>
+
+       <!-- แม่หมูที่คลอดแล้ว -->
+       <div class="col-span-1 sm:col-span-2 lg:col-span-3">
+        <h3 class="text-white font-semibold mb-4">แม่หมูที่คลอดแล้ว</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for pig in delivered_pigs %}
+            <div class="flex items-center bg-green-600 p-4 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 group">
+                <img src="{{ pig.image.url }}" alt="Pig Image" class="w-16 h-16 rounded-full object-cover mr-4">
+                <div class="flex-1">
+                    <h4 class="text-white font-bold">{{ pig.pig_id }}</h4>
+                    <p class="text-white text-sm">สถานะ: <span class="font-bold">{{ pig.status }}</span></p>
+                </div>
+                <!-- ปุ่มดูประวัติ -->
+                <a href="{% url 'breeding_history' pig_id=pig.pig_id %}" 
+                    class="bg-blue-500 text-white p-2 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200 absolute opacity-0 group-hover:opacity-100">
+                    ดูประวัติ
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        </div>
     </div>
+</div>
 
-            <!-- แผนภูมิวงกลมสถานะหมู -->
-            <div class="bg-gray-700 p-4 rounded-xl max-h-50">
-                <h3 class="text-xl mb-4">สถานะหมู</h3>
-                <canvas id="statusPieChart" width="3" height="300"></canvas> <!-- ลดขนาดของแผนภูมิวงกลม -->
-                <script>
-                    const pigsNotBred = {{ pigs_not_bred }};
-                    const pigsReady = {{ pigs_ready }};
-                    const pigsBred = {{ pigs_bred }};
-                    const pigsDelivered = {{ pigs_delivered }};
-                    
-                    const ctx = document.getElementById('statusPieChart').getContext('2d');
-                    
-                    const statusChart = new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            labels: ['ยังไม่ผสม', 'พร้อมผสม', 'ผสมแล้ว', 'คลอดแล้ว'],
-                            datasets: [{
-                                data: [pigsNotBred, pigsReady, pigsBred, pigsDelivered],
-                                backgroundColor: ['#f39c12', '#27ae60', '#2980b9', '#e74c3c'],
-                                hoverOffset: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                legend: {
-                                    position: 'top',
+
+            <!-- ส่วนที่แสดงกราฟ -->
+            <div class="flex-1">
+                <section class="grid grid-cols-1 gap-6 mb-6">
+                    <!-- แสดงกราฟการผสมหมู -->
+                    <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl mb-4 text-white">สถิติการผสมหมู</h3>
+                        <canvas id="breedingChart"></canvas>
+                        <script>
+                            const ctx = document.getElementById('breedingChart').getContext('2d');
+                            const breedingStats = JSON.parse('{{ breeding_stats|escapejs }}');
+                            const months = breedingStats.map(item => item.month.substring(0, 7));
+                            const counts = breedingStats.map(item => item.count);
+
+                            new Chart(ctx, {
+                                type: 'line',
+                                data: {
+                                    labels: months,
+                                    datasets: [{
+                                        label: 'จำนวนการผสมหมู',
+                                        data: counts,
+                                        borderColor: 'rgba(255, 99, 132, 1)',
+                                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                        fill: true
+                                    }]
                                 },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(tooltipItem) {
-                                            return `${tooltipItem.label}: ${tooltipItem.raw} ตัว`;
-                                        }
+                                options: {
+                                    responsive: true,
+                                    scales: {
+                                        x: { ticks: { color: 'white' } },
+                                        y: { ticks: { color: 'white', beginAtZero: true } }
+                                    },
+                                    plugins: {
+                                        legend: { position: 'top' },
+                                        tooltip: { callbacks: { label: function(tooltipItem) { return `จำนวน: ${tooltipItem.raw}`; } } }
                                     }
                                 }
-                            }
-                        }
-                    });
-                </script>
+                            });
+                        </script>
+                    </div>
+
+                    <!-- แผนภูมิวงกลมสถานะหมู -->
+                    <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-xl mb-4 text-white">สถานะหมู</h3>
+                        <canvas id="statusPieChart"></canvas>
+                        <script>
+                            const pigsNotBred = {{ pigs_not_bred }};
+                            const pigsReady = {{ pigs_ready }};
+                            const pigsBred = {{ pigs_bred }};
+                            const pigsDelivered = {{ pigs_delivered }};
+
+                            const ctxPie = document.getElementById('statusPieChart').getContext('2d');
+                            new Chart(ctxPie, {
+                                type: 'pie',
+                                data: {
+                                    labels: ['ยังไม่ผสม', 'พร้อมผสม', 'ผสมแล้ว', 'คลอดแล้ว'],
+                                    datasets: [{
+                                        data: [pigsNotBred, pigsReady, pigsBred, pigsDelivered],
+                                        backgroundColor: ['#f39c12', '#27ae60', '#2980b9', '#e74c3c'],
+                                        hoverOffset: 4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: { position: 'top' },
+                                        tooltip: { callbacks: { label: function(tooltipItem) { return `${tooltipItem.label}: ${tooltipItem.raw} ตัว`; } } }
+                                    }
+                                }
+                            });
+                        </script>
+                    </div>
+                </section>
             </div>
         </section>
-        <div>
-            <h3 class="text-xl mb-4">สถิติลูกสุกรในฟาร์ม</h3>
-            <p>จำนวนลูกสุกรที่รอดชีวิต: {{ total_alive_piglets }}</p>
-            <p>จำนวนลูกสุกรที่ตาย: {{ total_dead_piglets }}</p>
-            <p>จำนวนลูกสุกรที่พิการ: {{ total_deformed_piglets }}</p>
-        </div>
-        
+    </div>
 
 </body>
 </html>

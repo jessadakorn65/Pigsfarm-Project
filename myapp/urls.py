@@ -29,7 +29,10 @@ urlpatterns = [
     path('check_heat_status/<str:pig_id>/', views.check_heat_status, name='check_heat_status'),
     path('reset_mother_status/<str:pig_id>/', views.reset_mother_status, name='reset_mother_status'),
     path('export_pig/<str:pig_id>/', views.export_pig, name='export_pig'),
-
+    path('edit_profile/', views.edit_profile, name='edit_profile'),
+    path('profile/', views.profile, name='profile'),  # URL สำหรับหน้าโปรไฟล์
    
 
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

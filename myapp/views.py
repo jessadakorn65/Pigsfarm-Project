@@ -154,6 +154,7 @@ def edit_pig(request, pig_id):
         form = PigForm(instance=pig)
     return render(request, 'myapp/edit_pig.html', {'form': form, 'pig': pig})
 
+
 def delete_pig(request, pig_id):
     pig = get_object_or_404(Pig, pig_id=pig_id)
     if request.method == "POST":
@@ -174,11 +175,6 @@ def add_pig(request):
 # views.py
 from django.shortcuts import get_object_or_404, redirect
 from .models import Pig, PigQueue
-from django.contrib import messages
-
-
-from django.contrib import messages
-
 from django.contrib import messages
 
 def add_to_queue(request, pig_id):
@@ -329,12 +325,12 @@ def some_view(request):
 
 
 # --------------------------------dashboard --------------------------------
-from django.shortcuts import render
-from django.db.models import Count
+from django.shortcuts import render 
 from django.db.models import Count, Sum
 from .models import Pig, PigQueue, BreedingRecord
 from django.db.models.functions import TruncMonth
 import json
+from datetime import date  # เพิ่มการใช้งาน date สำหรับการแสดงวันที่
 
 @login_required
 def boss_dashboard(request):
@@ -348,7 +344,7 @@ def boss_dashboard(request):
     pigs_delivered = Pig.objects.filter(status='delivered').count()
 
     # ดึงจำนวนหมูในคิว
-    pigs_in_queue = PigQueue.objects.count()  # จำนวนหมูในคิว
+    pigs_in_queue = PigQueue.objects.count()
 
     # นับจำนวนลูกสุกรที่รอดชีวิตจากการคลอด
     total_alive_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_alive=Sum('alive_piglets'))['total_alive'] or 0
@@ -367,10 +363,17 @@ def boss_dashboard(request):
 
     # แปลงวันที่ใน `breeding_stats` ให้เป็นสตริงก่อนส่งไปยังเทมเพลต
     for stat in breeding_stats:
-        stat['month'] = stat['month'].strftime('%Y-%m')  # แปลงวันที่เป็นสตริงในรูปแบบ 'YYYY-MM'
+        stat['month'] = stat['month'].strftime('%Y-%m')
 
     # แปลงข้อมูลให้เป็น JSON
     breeding_stats_json = json.dumps(list(breeding_stats))
+
+    # ดึงหมูที่มีสถานะ 'delivered' หรือ 'คลอดแล้ว'
+    delivered_pigs = Pig.objects.filter(status='delivered')
+
+    # ดึงข้อมูลของผู้ใช้และวันที่ปัจจุบัน
+    today_date = date.today()
+    user = request.user
 
     # ส่งข้อมูลไปที่เทมเพลต
     return render(request, 'myapp/boss_dashboard.html', {
@@ -379,10 +382,36 @@ def boss_dashboard(request):
         'pigs_ready': pigs_ready,
         'pigs_bred': pigs_bred,
         'pigs_delivered': pigs_delivered,
-        'pigs_in_queue': pigs_in_queue,  # ส่งข้อมูลจำนวนหมูในคิว
-        'total_alive_piglets': total_alive_piglets,  # ส่งข้อมูลจำนวนลูกสุกรที่รอดชีวิต
-        'total_dead_piglets': total_dead_piglets,  # ส่งข้อมูลจำนวนลูกสุกรที่ตาย
-        'total_deformed_piglets': total_deformed_piglets,  # ส่งข้อมูลจำนวนลูกสุกรที่พิการ
-        'breeding_stats': breeding_stats_json  # ส่งข้อมูลการผสมหมูในแต่ละเดือน
+        'pigs_in_queue': pigs_in_queue,
+        'total_alive_piglets': total_alive_piglets,
+        'total_dead_piglets': total_dead_piglets,
+        'total_deformed_piglets': total_deformed_piglets,
+        'breeding_stats': breeding_stats_json,
+        'delivered_pigs': delivered_pigs,  # ส่งหมูที่มีสถานะ 'delivered'
+        'user': user,  # ส่งข้อมูลผู้ใช้ไปยังเทมเพลต
+        'today_date': today_date,  # ส่งวันที่ปัจจุบันไปยังเทมเพลต
     })
+
+
+from django.shortcuts import render, redirect
+from .forms import CustomUserForm
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        form = CustomUserForm(request.POST, request.FILES, instance=user)  # รับไฟล์รูปภาพด้วย
+        if form.is_valid():
+            form.save()
+            return redirect('profile')  # ไปที่หน้าผู้ใช้หลังจากบันทึกสำเร็จ
+    else:
+        form = CustomUserForm(instance=user)  # แสดงฟอร์มการแก้ไข
+    return render(request, 'myapp/edit_profile.html', {'form': form})
+
+# views.py
+@login_required
+def profile(request):
+    user = request.user  # ดึงข้อมูลผู้ใช้ที่ล็อกอินอยู่
+    return render(request, 'myapp/profile.html', {'user': user})
 

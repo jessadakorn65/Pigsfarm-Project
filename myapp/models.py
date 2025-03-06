@@ -16,20 +16,23 @@ class CustomUser(AbstractUser):
     
     # ฟิลด์เบอร์โทร
     phone_number = models.CharField(max_length=10, null=True, blank=True)
-    
+
+    # ฟิลด์โปรไฟล์รูปภาพ
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)  # กำหนด path สำหรับเก็บภาพ
+
     # ฟังก์ชันแสดงบทบาทและข้อมูลผู้ใช้
     def __str__(self):
         return f'{self.username} ({self.get_role_display()}) - ID: {self.id_card} - Phone: {self.phone_number}'
+
 
 #-----------------------------------------------------------------------------------------------------------------
 # ตาราง pigs
 
 from django.db import models
 from datetime import timedelta
-# models.py
-from django.db import models
 
 from django.db import models
+from datetime import timedelta
 
 class Pig(models.Model):
     PIG_STATUS_CHOICES = [
@@ -46,7 +49,8 @@ class Pig(models.Model):
         choices=PIG_STATUS_CHOICES,
         default='not_bred'  
     )
-    zone = models.CharField(max_length=50)
+
+    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)  # น้ำหนักหมู
     address_lock = models.CharField(max_length=100)
     image = models.ImageField(upload_to='pigs/', blank=True, null=True)
 
@@ -71,7 +75,6 @@ class BreedingRecord(models.Model):
     pig = models.ForeignKey(Pig, on_delete=models.CASCADE, related_name='breeding_records', to_field="pig_id")
     breeding_date = models.DateField()
     semen_id = models.CharField(max_length=50)
-    insemination_count = models.IntegerField(default=1)
     
     # ข้อมูลการคลอด
     delivery_date = models.DateField(blank=True, null=True)
@@ -80,8 +83,7 @@ class BreedingRecord(models.Model):
     dead_piglets = models.IntegerField(default=0)  
     deformed_piglets = models.IntegerField(default=0)
 
-    # เพิ่มฟิลด์รูปภาพและโน้ต
-    insemination_image = models.ImageField(upload_to='insemination_images/', blank=True, null=True)  # เก็บรูป
+    # โน้ตเพิ่มเติม
     notes = models.TextField(blank=True, null=True)  # โน้ตเพิ่มเติม
 
     @property
@@ -94,14 +96,6 @@ class BreedingRecord(models.Model):
         if not self.delivery_date:
             self.delivery_date = self.breeding_date + timedelta(days=110)
         
-        # ตรวจสอบการผสมครั้งก่อนและอัปเดตจำนวนครั้งการผสม
-        if not self.insemination_count:
-            previous_record = BreedingRecord.objects.filter(pig=self.pig).order_by('-breeding_date').first()
-            if previous_record:
-                self.insemination_count = previous_record.insemination_count + 1
-            else:
-                self.insemination_count = 1
-
         super().save(*args, **kwargs)
 
 

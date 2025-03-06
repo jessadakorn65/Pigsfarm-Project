@@ -1,0 +1,15 @@
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label for="id_username">Username</label>
+    {{ form.username }}
+    
+    <label for="id_email">Email</label>
+    {{ form.email }}
+    
+    <label for="id_profile_image">Profile Image</label>
+    {{ form.profile_image }}
+
+    <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition-colors duration-200">
+        บันทึกการแก้ไข
+    </button>
+</form>
