@@ -1,56 +1,48 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แดชบอร์ดพนักงาน</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Document</title>
 </head>
-<body>
-    <div class="flex min-h-screen bg-gray-100">
-      <!-- Sidebar -->
-      <div class="w-1/4 bg-green-500 p-4 text-white">
-        <div class="text-center">
-          <h1 class="mt-4 text-xl font-bold">ระบบจัดการฟาร์มสุกร</h1>
+<body class="bg-gray-100 p-6">
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-bold mb-4 text-center">ข้อมูลการคลอดลูกสุกร</h1>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-2 px-4 border-b">รหัสแม่หมู</th>
+                        <th class="py-2 px-4 border-b">วันที่ผสม</th>
+                        <th class="py-2 px-4 border-b">วันที่คาดว่าจะคลอด</th>
+                        <th class="py-2 px-4 border-b">วันที่คลอดจริง</th>
+                        <th class="py-2 px-4 border-b">ลูกหมูรอด</th>
+                        <th class="py-2 px-4 border-b">ลูกหมูตาย</th>
+                        <th class="py-2 px-4 border-b">ลูกหมูพิการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in breeding_records %}
+                    <tr class="text-center border-b">
+                        <td class="py-2 px-4">{{ record.mother_pig_id }}</td>
+                        <td class="py-2 px-4">{{ record.breeding_date }}</td>
+                        <td class="py-2 px-4">{{ record.expected_delivery_date }}</td>
+                        <td class="py-2 px-4">{{ record.actual_delivery_date }}</td>
+                        <td class="py-2 px-4">{{ record.piglets_born_alive }}</td>
+                        <td class="py-2 px-4">{{ record.piglets_born_dead }}</td>
+                        <td class="py-2 px-4">{{ record.piglets_deformed }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">ไม่มีข้อมูลการคลอด</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        <nav class="mt-8">
-          <ul>
-            <li class="mt-4">
-              <a href="#" class="block py-2 px-4 bg-green-600 rounded-md text-center">โปรไฟล์ของฉัน</a>
-            </li>
-            <li class="mt-4">
-              <a href="#" class="block py-2 px-4 bg-green-600 rounded-md text-center">การจัดการโปรไฟล์</a>
-            </li>
-            <li class="mt-4">
-              <a href="#" class="block py-2 px-4 bg-green-600 rounded-md text-center">ออกจากระบบ</a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    
-      <!-- Main Content -->
-      <div class="w-3/4 p-8">
-        <!-- Box 1 -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 class="text-red-600 text-xl font-semibold">ดูประวัติข้อมูลสุกรรายเดือน</h2>
-          <p class="mt-2 text-gray-600">ดูข้อมูลสุกรตามเดือน</p>
-          <button class="mt-4 bg-green-500 text-white py-2 px-4 rounded">ยืนยัน</button>
-        </div>
-        
-        <!-- Box 2 -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 class="text-red-600 text-xl font-semibold">ดูโปรไฟล์เจ้าของฟาร์ม</h2>
-          <p class="mt-2 text-gray-600">ดูข้อมูลเจ้าของฟาร์ม</p>
-          <button class="mt-4 bg-green-500 text-white py-2 px-4 rounded">ยืนยัน</button>
-        </div>
-        
-        <!-- Box 3 -->
-        <div class="bg-white shadow-md rounded-lg p-6">
-          <h2 class="text-red-600 text-xl font-semibold">แก้ไขโปรไฟล์ตัวเอง</h2>
-          <p class="mt-2 text-gray-600">ปรับเปลี่ยนข้อมูลโปรไฟล์ตนเอง</p>
-          <button class="mt-4 bg-green-500 text-white py-2 px-4 rounded">ยืนยัน</button>
-        </div>
-      </div>
     </div>
 </body>
 </html>

@@ -92,6 +92,11 @@ def record_breeding(request, pig_id):
     return render(request, 'myapp/record_breeding.html', {'pig': pig, 'form': form})
 
 
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Sum
+from .models import Pig, BreedingRecord
+
+# ฟังก์ชันใน views.py ที่ใช้ในการสร้างข้อมูลกราฟ
 def breeding_history(request, pig_id):
     pig = get_object_or_404(Pig, pig_id=pig_id)  # ใช้ pig_id เป็น primary key
     breeding_records = pig.breeding_records.all()  # ดึงข้อมูลประวัติการผสมทั้งหมดที่เชื่อมโยงกับหมูตัวนี้
@@ -99,11 +104,26 @@ def breeding_history(request, pig_id):
     # ดึงบันทึกการคลอดล่าสุด
     latest_breeding_record = breeding_records.order_by('-delivery_date').first()
 
+    # คำนวณจำนวนลูกสุกรที่รอดชีวิตจากแต่ละรหัสน้ำเชื้อ
+    semen_stats = breeding_records.values('semen_id') \
+                                   .annotate(total_alive_piglets=Sum('alive_piglets')) \
+                                   .order_by('-total_alive_piglets')  # เรียงจากมากไปน้อย
+
+    # กรองข้อมูลที่ไม่ต้องการ (กรองที่มีคำว่า "ส่งออก")
+    semen_stats = semen_stats.exclude(semen_id='ส่งออก')
+
+    # สร้างข้อมูลสำหรับกราฟ
+    semen_ids = [stat['semen_id'] for stat in semen_stats]
+    total_alive_piglets = [stat['total_alive_piglets'] for stat in semen_stats]
+
     return render(request, 'myapp/breeding_history.html', {
         'pig': pig,
         'breeding_records': breeding_records,
-        'latest_breeding_record': latest_breeding_record  # ส่งบันทึกการคลอดล่าสุด
+        'latest_breeding_record': latest_breeding_record,  # ส่งบันทึกการคลอดล่าสุด
+        'semen_ids': semen_ids,  # ส่งข้อมูลรหัสน้ำเชื้อ
+        'total_alive_piglets': total_alive_piglets  # ส่งข้อมูลจำนวนลูกสุกรที่รอดชีวิต
     })
+
 
     
 
@@ -283,9 +303,11 @@ def reset_mother_status(request, pig_id):
     
     return redirect('breeding_history', pig_id=pig.pig_id)  # กลับไปที่หน้าประวัติการผสมของหมู
 
+
+import datetime
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from .models import Pig, BreedingRecord
+from .models import BreedingRecord, Pig
 
 def export_pig(request, pig_id):
     pig = get_object_or_404(Pig, pig_id=pig_id)
@@ -296,20 +318,33 @@ def export_pig(request, pig_id):
         pig.status = 'not_bred'
         pig.save()
 
-        # บันทึกการส่งออกในประวัติการผสม
+        # บันทึกวันที่ส่งออก
+        export_date = datetime.datetime.now()
+
+        # ดึงเรคคอร์ดล่าสุดของหมู
+        latest_record = pig.breeding_records.latest('breeding_date')
+
+        # บันทึกการส่งออกในประวัติการผสม (ดึงแค่ "รอด" กับ "พิการ")
         BreedingRecord.objects.create(
-            pig=pig,
-            breeding_date=pig.breeding_records.latest('breeding_date').breeding_date,  # ใช้วันที่ผสมล่าสุด
-            semen_id='ส่งออก',
-            notes='ส่งออกลูกสุกรแล้ว'
-        )
+        pig=pig,
+        breeding_date=latest_record.breeding_date,
+        semen_id='ส่งออก',
+        alive_piglets=latest_record.alive_piglets,
+        dead_piglets=latest_record.dead_piglets,  # ✅ เพิ่มเพื่อให้ total_piglets คำนวณถูกต้อง
+        deformed_piglets=latest_record.deformed_piglets,
+        notes=f'ส่งออกลูกสุกรเมื่อ {export_date.strftime("%Y-%m-%d %H:%M:%S")}',
+        export_date=export_date
+)
+
 
         # แสดงข้อความยืนยัน
-        messages.success(request, f"หมู {pig.name} ถูกส่งออกและสถานะถูกรีเซ็ตเป็น 'ยังไม่ผสม'!")
+        messages.success(request, f"หมู {pig.name} ถูกส่งออกและบันทึกวันที่ส่งออกเรียบร้อยแล้ว!")
+
     else:
         messages.error(request, "ไม่สามารถส่งออกหมูที่ไม่อยู่ในสถานะ 'คลอดแล้ว' ได้!")
 
     return redirect('breeding_history', pig_id=pig.pig_id)
+
 
 from django.contrib import messages
 from django.shortcuts import render
@@ -331,6 +366,8 @@ from .models import Pig, PigQueue, BreedingRecord
 from django.db.models.functions import TruncMonth
 import json
 from datetime import date  # เพิ่มการใช้งาน date สำหรับการแสดงวันที่
+
+from django.db.models import Sum, F
 
 @login_required
 def boss_dashboard(request):
@@ -355,6 +392,14 @@ def boss_dashboard(request):
     # นับจำนวนลูกสุกรที่พิการ
     total_deformed_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_deformed=Sum('deformed_piglets'))['total_deformed'] or 0
 
+    # คำนวณจำนวนลูกหมูที่คลอดจากแต่ละหมู
+    pigs_delivery_stats = Pig.objects.filter(status='delivered')\
+                                      .annotate(total_piglets=Sum('breeding_records__alive_piglets'))\
+                                      .values('pig_id', 'total_piglets')
+
+    # แปลงข้อมูลจำนวนลูกหมูที่คลอดเป็น JSON เพื่อใช้ในกราฟ
+    pigs_delivery_stats_json = json.dumps(list(pigs_delivery_stats))
+
     # ดึงข้อมูลการผสมหมูในแต่ละเดือน
     breeding_stats = BreedingRecord.objects.annotate(month=TruncMonth('breeding_date')) \
                                            .values('month') \
@@ -370,6 +415,12 @@ def boss_dashboard(request):
 
     # ดึงหมูที่มีสถานะ 'delivered' หรือ 'คลอดแล้ว'
     delivered_pigs = Pig.objects.filter(status='delivered')
+
+    # ดึงประวัติแม่หมูที่คลอดลูก พร้อมจำนวนลูกสุกรที่รอด
+    delivered_pigs_records = BreedingRecord.objects.filter(pig__status='delivered') \
+        .values('pig__pig_id', 'pig__name', 'delivery_date') \
+        .annotate(total_alive_piglets=Sum('alive_piglets')) \
+        .order_by('-delivery_date')  # เรียงจากวันที่คลอดล่าสุด
 
     # ดึงข้อมูลของผู้ใช้และวันที่ปัจจุบัน
     today_date = date.today()
@@ -388,6 +439,8 @@ def boss_dashboard(request):
         'total_deformed_piglets': total_deformed_piglets,
         'breeding_stats': breeding_stats_json,
         'delivered_pigs': delivered_pigs,  # ส่งหมูที่มีสถานะ 'delivered'
+        'pigs_delivery_stats': pigs_delivery_stats_json,  # ส่งข้อมูลจำนวนลูกหมูที่คลอด
+        'delivered_pigs_records': delivered_pigs_records,  # ส่งข้อมูลไปยังเทมเพลต
         'user': user,  # ส่งข้อมูลผู้ใช้ไปยังเทมเพลต
         'today_date': today_date,  # ส่งวันที่ปัจจุบันไปยังเทมเพลต
     })
@@ -414,4 +467,6 @@ def edit_profile(request):
 def profile(request):
     user = request.user  # ดึงข้อมูลผู้ใช้ที่ล็อกอินอยู่
     return render(request, 'myapp/profile.html', {'user': user})
+
+# --------------------------------จบ------------------------------------------------
 

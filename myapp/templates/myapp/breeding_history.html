@@ -4,91 +4,272 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-<div class="max-w-5xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
-    <h2 class="text-2xl font-bold mb-6 text-center">ประวัติการผสมของแม่สุกร: {{ pig.pig_id }}</h2>
-
-    {% if breeding_records %}
-    <table class="w-full border-collapse border border-gray-300 text-sm">
-        <thead>
-            <tr class="bg-gray-200 text-center">
-                <th class="border border-gray-300 px-4 py-2">วันที่ผสม</th>
-                <th class="border border-gray-300 px-4 py-2">รหัสน้ำเชื้อ</th>
-                <th class="border border-gray-300 px-4 py-2">วันที่คลอด</th>
-                <th class="border border-gray-300 px-4 py-2">เวลาคลอด</th>
-                <th class="border border-gray-300 px-4 py-2">รอด</th>
-                <th class="border border-gray-300 px-4 py-2">ตาย</th>
-                <th class="border border-gray-300 px-4 py-2">พิการ</th>
-                <th class="border border-gray-300 px-4 py-2">รวม</th>
-                <th class="border border-gray-300 px-4 py-2">หมายเหตุ</th>
-                <th class="border border-gray-300 px-4 py-2">ส่งออก</th> <!-- คอลัมน์ใหม่ -->
-                <th class="border border-gray-300 px-4 py-2">จัดการ</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in breeding_records %}
-            <tr class="text-center hover:bg-gray-100 {% if record == latest_breeding_record %} border-4 border-blue-500 {% else %} border-t border-gray-300 {% endif %} p-2">
-                <td class="border border-gray-300 px-4 py-2">{{ record.breeding_date }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ record.semen_id }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ record.delivery_date|default:"-" }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ record.birth_time|default:"-" }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ record.alive_piglets }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ record.dead_piglets }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ record.deformed_piglets }}</td>
-                <td class="border border-gray-300 px-4 py-2 font-bold">
-                    {{ record.total_piglets }}
-                </td>
-                <td class="border border-gray-300 px-4 py-2">
-                    {{ record.notes|default:"-" }}
-                </td>
-                <td class="border border-gray-300 px-4 py-2">
-                    {% if record == latest_breeding_record %}
-                        <form action="{% url 'export_pig' pig.pig_id %}" method="POST">
-                            {% csrf_token %}
-                            <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-                                ส่งออก
-                            </button>
-                        </form>
-                    {% else %}
-                        ส่งออกไปแล้ว
-                    {% endif %}
-                </td>
-                <td class="border border-gray-300 px-4 py-2">
-                    <a href="{% url 'update_piglet_data' pig.pig_id %}" 
-                       class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                        แก้ไข
-                    </a>
-                    <a href="{% url 'delete_breeding_record' record.id %}" 
-                       class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                        ลบ
-                    </a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-        <p class="text-center text-gray-500">ไม่มีประวัติการผสม</p>
-    {% endif %}
-
-    <div class="mt-6 flex justify-between">
-        <a href="{% url 'pig_list' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-            กลับไปยังรายการหมู
-        </a>
-
-        <form action="{% url 'reset_mother_status' pig.pig_id %}" method="POST" class="flex items-center space-x-4">
-            {% csrf_token %}
-            <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">
-                รีเซ็ตสถานะเป็น 'ยังไม่ผสม'
-            </button>
-        </form>
-
-        <a href="{% url 'update_piglet_data' pig.pig_id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-            + บันทึกข้อมูลลูกสุกร
-        </a>
+    <div class="max-w-4xl mx-auto mt-8 p-4 bg-white shadow-md rounded-lg">
+        <h2 class="text-2xl font-bold mb-6 text-center">ประวัติการผสมของแม่สุกร: {{ pig.pig_id }}</h2>
+    
+        {% if breeding_records %}
+        <table class="w-full border-collapse border border-gray-300 text-sm">
+            <thead>
+                <tr class="bg-gray-200 text-center">
+                    <th class="border border-gray-300 px-4 py-2">วันที่ผสม</th>
+                    <th class="border border-gray-300 px-4 py-2">รหัสน้ำเชื้อ</th>
+                    <th class="border border-gray-300 px-4 py-2">วันที่คลอด</th>
+                    <th class="border border-gray-300 px-4 py-2">เวลาคลอด</th>
+                    <th class="border border-gray-300 px-4 py-2">รอด</th>
+                    <th class="border border-gray-300 px-4 py-2">ตาย</th>
+                    <th class="border border-gray-300 px-4 py-2">พิการ</th>
+                    <th class="border border-gray-300 px-4 py-2">รวม</th>
+                    <th class="border border-gray-300 px-4 py-2">หมายเหตุ</th>
+                    <th class="border border-gray-300 px-4 py-2">ส่งออก</th>
+                    <th class="border border-gray-300 px-4 py-2">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in breeding_records %}
+                <tr class="text-center hover:bg-gray-100 {% if record == latest_breeding_record %} border-4 border-blue-500 {% else %} border-t border-gray-300 {% endif %} p-2">
+                    <td class="border border-gray-300 px-4 py-2">{{ record.breeding_date }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ record.semen_id }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ record.delivery_date|default:"-" }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ record.birth_time|default:"-" }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ record.alive_piglets }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ record.dead_piglets }}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{ record.deformed_piglets }}</td>
+                    <td class="border border-gray-300 px-4 py-2 font-bold">
+                        {{ record.total_piglets }}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        {{ record.notes|default:"-" }}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        {% if record == latest_breeding_record %}
+                            <form action="{% url 'export_pig' pig.pig_id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                                    ส่งออก
+                                </button>
+                            </form>
+                        {% else %}
+                            ส่งออกไปแล้ว
+                        {% endif %}
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                        <a href="{% url 'update_piglet_data' pig.pig_id %}" 
+                           class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
+                            แก้ไข
+                        </a>
+                        <a href="{% url 'delete_breeding_record' record.id %}" 
+                           class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                            ลบ
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="text-center text-gray-500">ไม่มีประวัติการผสม</p>
+        {% endif %}
+    
+        <div class="mt-6 flex justify-between">
+            <a href="{% url 'pig_list' %}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                กลับไปยังรายการหมู
+            </a>
+    
+            <form action="{% url 'reset_mother_status' pig.pig_id %}" method="POST" class="flex items-center space-x-4">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">
+                    รีเซ็ตสถานะเป็น 'ยังไม่ผสม'
+                </button>
+            </form>
+    
+            <a href="{% url 'update_piglet_data' pig.pig_id %}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                + บันทึกข้อมูลลูกสุกร
+            </a>
+        </div>
     </div>
+    
+    <div class="mt-8">
+        <h3 class="text-xl font-bold mb-4 text-center">กราฟแสดงจำนวนลูกสุกรที่คลอดในแต่ละรอบการผสม</h3>
+        <canvas id="pigletChart" class="w-full md:w-2/3 mx-auto"></canvas> <!-- ปรับขนาดกราฟ -->
+    </div>
+
+    <script>
+        var labels = [];
+        var alivePigletsData = [];
+        var backgroundColors = [];  // อาเรย์สำหรับเก็บสี
+        var borderColors = [];      // อาเรย์สำหรับเก็บสีขอบ
+
+        // ฟังก์ชันสำหรับสุ่มสี
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        {% for record in breeding_records %}
+            {% if record.alive_piglets > 0 %}
+                labels.push("{{ record.breeding_date }}");
+                alivePigletsData.push({{ record.alive_piglets }});
+                backgroundColors.push(getRandomColor());  // กำหนดสีพื้นหลังแบบสุ่ม
+                borderColors.push(getRandomColor());      // กำหนดสีขอบแบบสุ่ม
+            {% endif %}
+        {% endfor %}
+
+        var ctx = document.getElementById('pigletChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'จำนวนลูกสุกรที่รอดชีวิต',
+                    data: alivePigletsData,
+                    backgroundColor: backgroundColors, // ใช้สีพื้นหลังที่กำหนด
+                    borderColor: borderColors,         // ใช้สีขอบที่กำหนด
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'จำนวนลูกสุกรที่รอดชีวิตจากการผสมแต่ละรอบ'
+                    },
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+    <div class="mt-8">
+        <h3 class="text-xl font-bold mb-4 text-center">กราฟแสดงจำนวนลูกสุกรที่รอดชีวิตจากแต่ละรหัสน้ำเชื้อ</h3>
+        <canvas id="semenChart" class="w-full md:w-2/3 mx-auto"></canvas>
+    </div>
+
+    <script>
+        const semenIds = {{ semen_ids|safe }};
+        const totalAlivePiglets = {{ total_alive_piglets|safe }};
+    
+        const ctx2 = document.getElementById('semenChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: semenIds,
+                datasets: [{
+                    label: 'จำนวนลูกสุกรที่รอดชีวิต',
+                    data: totalAlivePiglets,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'รหัสน้ำเชื้อ'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'จำนวนลูกสุกรที่รอดชีวิต'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+    
+
+<div class="mt-8">
+    <h3 class="text-xl font-bold mb-4 text-center">กราฟแสดงจำนวนหมูที่ตายและพิการตามวันที่ส่งออก</h3>
+    <canvas id="exportChart" class="w-full md:w-2/3 mx-auto"></canvas>
 </div>
+
+<script>
+    var exportLabels = [];
+    var deadPigletsData = [];
+    var deformedPigletsData = [];
+
+    {% for record in breeding_records %}
+        {% if record.export_date %}
+            exportLabels.push("{{ record.export_date|date:'Y-m-d' }}");  // วันที่ส่งออก
+            deadPigletsData.push({{ record.dead_piglets }});  // หมูที่ตาย
+            deformedPigletsData.push({{ record.deformed_piglets }});  // หมูที่พิการ
+        {% endif %}
+    {% endfor %}
+
+    var ctxExport = document.getElementById('exportChart').getContext('2d');
+    new Chart(ctxExport, {
+        type: 'bar',
+        data: {
+            labels: exportLabels,
+            datasets: [
+                {
+                    label: 'หมูที่ตาย',
+                    data: deadPigletsData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',   // สีแดงอ่อน
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'หมูที่พิการ',
+                    data: deformedPigletsData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',   // สีน้ำเงินอ่อน
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'จำนวนหมูที่ตายและพิการตามวันที่ส่งออก'
+                },
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'วันที่ส่งออก'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'จำนวนหมู'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
 
 </body>
 </html>

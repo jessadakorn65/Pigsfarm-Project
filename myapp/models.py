@@ -75,16 +75,16 @@ class BreedingRecord(models.Model):
     pig = models.ForeignKey(Pig, on_delete=models.CASCADE, related_name='breeding_records', to_field="pig_id")
     breeding_date = models.DateField()
     semen_id = models.CharField(max_length=50)
-    
     # ข้อมูลการคลอด
     delivery_date = models.DateField(blank=True, null=True)
     birth_time = models.TimeField(blank=True, null=True)  # เวลาที่คลอด
     alive_piglets = models.IntegerField(default=0)  
     dead_piglets = models.IntegerField(default=0)  
     deformed_piglets = models.IntegerField(default=0)
-
-    # โน้ตเพิ่มเติม
     notes = models.TextField(blank=True, null=True)  # โน้ตเพิ่มเติม
+    export_date = models.DateTimeField(null=True, blank=True)  # ✅ เพิ่มฟิลด์นี้
+    actual_delivery_date = models.DateField(blank=True, null=True)  # ✅ วันที่คลอดจริง
+
 
     @property
     def total_piglets(self):
@@ -106,3 +106,5 @@ class PigQueue(models.Model):
 
     def __str__(self):
         return f"{self.pig.pig_id} - {self.pig.name}"
+    
+

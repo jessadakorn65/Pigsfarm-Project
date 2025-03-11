@@ -105,7 +105,7 @@
         </div>
         <div>
             <h3 class="text-3xl text-yellow-400">{{ total_pigs }}</h3>
-            <p class="text-sm text-gray-400">จำนวนหมูในฟาร์ม</p>
+            <p class="text-sm text-white">จำนวนหมูในฟาร์ม</p>
         </div>
     </div>
 
@@ -116,7 +116,7 @@
     </div>
     <div>
         <h3 class="text-3xl text-yellow-400">{{ pigs_in_queue }}</h3>
-        <p class="text-sm text-gray-400">สุกรที่ยังอยู่ในคิว</p>
+        <p class="text-sm text-white">สุกรที่พร้อมผสม</p>
     </div>
 </div>
 
@@ -181,58 +181,92 @@
 </div>
 
 
-            <!-- ส่วนที่แสดงกราฟ -->
-            <div class="flex-1">
-                <section class="grid grid-cols-1 gap-6 mb-6">
-                    <!-- แสดงกราฟการผสมหมู -->
-                    <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
-                        <h3 class="text-xl mb-4 text-white">สถิติการผสมหมู</h3>
-                        <canvas id="breedingChart"></canvas>
-                        <script>
-                            const ctx = document.getElementById('breedingChart').getContext('2d');
-                            const breedingStats = JSON.parse('{{ breeding_stats|escapejs }}');
-                            const months = breedingStats.map(item => item.month.substring(0, 7));
-                            const counts = breedingStats.map(item => item.count);
 
-                            new Chart(ctx, {
-                                type: 'line',
-                                data: {
-                                    labels: months,
-                                    datasets: [{
-                                        label: 'จำนวนการผสมหมู',
-                                        data: counts,
-                                        borderColor: 'rgba(255, 99, 132, 1)',
-                                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                        fill: true
-                                    }]
+<!-- ส่วนที่แสดงกราฟ -->
+<div class="flex-1">
+    <section class="grid grid-cols-1 gap-6 mb-6">
+        <!-- แสดงกราฟการผสมหมู -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl mb-4 text-white">สถิติการผสมหมู</h3>
+            <canvas id="breedingChart"></canvas>
+            <script>
+                const ctx = document.getElementById('breedingChart').getContext('2d');
+                const breedingStats = JSON.parse('{{ breeding_stats|escapejs }}');
+                const months = breedingStats.map(item => item.month.substring(0, 7));
+                const counts = breedingStats.map(item => item.count);
+            
+                new Chart(ctx, {
+                    type: 'bar',  // เปลี่ยนจาก 'line' เป็น 'bar'
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'จำนวนการผสมหมู',
+                            data: counts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)', // สีแท่งโปร่งใส
+                            borderColor: 'rgba(54, 162, 235, 1)', // สีขอบแท่ง
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: 'white',
+                                    font: { size: 14 }
                                 },
-                                options: {
-                                    responsive: true,
-                                    scales: {
-                                        x: { ticks: { color: 'white' } },
-                                        y: { ticks: { color: 'white', beginAtZero: true } }
-                                    },
-                                    plugins: {
-                                        legend: { position: 'top' },
-                                        tooltip: { callbacks: { label: function(tooltipItem) { return `จำนวน: ${tooltipItem.raw}`; } } }
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.2)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'white',
+                                    beginAtZero: true,
+                                    font: { size: 14 }
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.2)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    font: { size: 14, color: 'white' }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                titleColor: 'white',
+                                bodyColor: 'white',
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        return `จำนวน: ${tooltipItem.raw}`;
                                     }
                                 }
-                            });
-                        </script>
-                    </div>
+                            }
+                        }
+                    }
+                });
+            </script>            
+        </div>
+    </section>
+</div>
 
                     <!-- แผนภูมิวงกลมสถานะหมู -->
-                    <div class="bg-gray-700 p-6 rounded-lg shadow-lg">
-                        <h3 class="text-xl mb-4 text-white">สถานะหมู</h3>
+                    <div class="bg-gray-200 p-6 rounded-lg shadow-lg w-80 h-95">
+                        <h3 class="text-xl mb-4 text-black">สถานะหมู</h3>
                         <canvas id="statusPieChart"></canvas>
                         <script>
                             const pigsNotBred = {{ pigs_not_bred }};
                             const pigsReady = {{ pigs_ready }};
                             const pigsBred = {{ pigs_bred }};
                             const pigsDelivered = {{ pigs_delivered }};
-
+                    
                             const ctxPie = document.getElementById('statusPieChart').getContext('2d');
-                            new Chart(ctxPie, {
+                            const myPieChart = new Chart(ctxPie, {
                                 type: 'pie',
                                 data: {
                                     labels: ['ยังไม่ผสม', 'พร้อมผสม', 'ผสมแล้ว', 'คลอดแล้ว'],
@@ -245,17 +279,57 @@
                                 options: {
                                     responsive: true,
                                     plugins: {
-                                        legend: { position: 'top' },
-                                        tooltip: { callbacks: { label: function(tooltipItem) { return `${tooltipItem.label}: ${tooltipItem.raw} ตัว`; } } }
+                                        legend: {
+                                            position: 'top',
+                                            labels: {
+                                                font: {
+                                                    size: 14, // ขนาดตัวอักษรใน legend
+                                                    weight: 'bold',
+                                                    color: 'white' // เปลี่ยนสีข้อความใน legend ให้เป็นสีขาว
+                                                }
+                                            }
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(tooltipItem) {
+                                                    return `${tooltipItem.label}: ${tooltipItem.raw} ตัว`;
+                                                }
+                                            },
+                                            titleFont: {
+                                                color: 'white' // เปลี่ยนสีข้อความใน tooltip title
+                                            },
+                                            bodyFont: {
+                                                color: 'white' // เปลี่ยนสีข้อความใน tooltip body
+                                            }
+                                        }
+                                    },
+                                    onClick: function(event, elements) {
+                                        if (elements.length) {
+                                            // ถ้าคลิกที่กราฟ
+                                            const clickedLabel = elements[0]._model.label; // เอาป้ายชื่อที่คลิก
+                                            const legendItems = myPieChart.legend.legendItems;
+                    
+                                            // เปลี่ยนสีข้อความใน legend ให้เป็นสีขาวเมื่อคลิก
+                                            legendItems.forEach(item => {
+                                                if (item.text === clickedLabel) {
+                                                    item.fontColor = 'white'; // เปลี่ยนสีฟอนต์ใน legend
+                                                }
+                                            });
+                    
+                                            // รีเฟรชกราฟเพื่อให้การเปลี่ยนแปลงเกิดขึ้น
+                                            myPieChart.update();
+                                        }
                                     }
                                 }
                             });
                         </script>
                     </div>
+                    
                 </section>
             </div>
         </section>
     </div>
+    
 
 </body>
 </html>
