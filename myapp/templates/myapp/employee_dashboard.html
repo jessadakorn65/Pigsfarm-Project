@@ -1,48 +1,73 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แดชบอร์ดพนักงาน</title>
+    <title>Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="container mx-auto">
-        <h1 class="text-2xl font-bold mb-4 text-center">ข้อมูลการคลอดลูกสุกร</h1>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-                <thead class="bg-gray-200">
-                    <tr>
-                        <th class="py-2 px-4 border-b">รหัสแม่หมู</th>
-                        <th class="py-2 px-4 border-b">วันที่ผสม</th>
-                        <th class="py-2 px-4 border-b">วันที่คาดว่าจะคลอด</th>
-                        <th class="py-2 px-4 border-b">วันที่คลอดจริง</th>
-                        <th class="py-2 px-4 border-b">ลูกหมูรอด</th>
-                        <th class="py-2 px-4 border-b">ลูกหมูตาย</th>
-                        <th class="py-2 px-4 border-b">ลูกหมูพิการ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in breeding_records %}
-                    <tr class="text-center border-b">
-                        <td class="py-2 px-4">{{ record.mother_pig_id }}</td>
-                        <td class="py-2 px-4">{{ record.breeding_date }}</td>
-                        <td class="py-2 px-4">{{ record.expected_delivery_date }}</td>
-                        <td class="py-2 px-4">{{ record.actual_delivery_date }}</td>
-                        <td class="py-2 px-4">{{ record.piglets_born_alive }}</td>
-                        <td class="py-2 px-4">{{ record.piglets_born_dead }}</td>
-                        <td class="py-2 px-4">{{ record.piglets_deformed }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="text-center py-4">ไม่มีข้อมูลการคลอด</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<body class="bg-gray-900 text-white flex">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 h-screen bg-gray-800 p-6 fixed">
+        <div class="text-center mb-8">
+            <h5 class="text-lg text-white">ระบบจัดการฟาร์มสุกร</h5>
         </div>
-    </div>
+        <ul class="space-y-6 mt-6">
+            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-house text-lg"></i><span class="ml-2">Dashboard</span></a></li>
+            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-piggy-bank text-lg"></i><span class="ml-2">เพิ่มข้อมูลสุกร</span></a></li>
+            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-list text-lg"></i><span class="ml-2">ดูรายการคิว</span></a></li>
+            <li><a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-sign-out-alt text-lg"></i><span class="ml-2">ออกจากระบบ</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-6">
+        <div class="max-w-6xl mx-auto bg-white text-black shadow-lg rounded-lg p-6">
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">ประวัติการคลอดลูกหมู</h1>
+
+            {% for month, records in grouped_records.items %}
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-gray-700 bg-blue-200 px-4 py-2 rounded-md">{{ month }}</h2>
+                <div class="overflow-x-auto mt-4">
+                    <table class="w-full border-collapse border border-gray-300 bg-white shadow-md rounded-lg">
+                        <thead>
+                            <tr class="bg-blue-500 text-white">
+                                <th class="p-3 border">ลำดับ</th>
+                                <th class="p-3 border">วันที่คลอด</th>
+                                <th class="p-3 border">คอก</th>
+                                <th class="p-3 border">รหัสแม่สุกร</th>
+                                <th class="p-3 border">รหัสน้ำเชื้อ</th>
+                                <th class="p-3 border">ตาย</th>
+                                <th class="p-3 border">พิการ</th>
+                                <th class="p-3 border">ลูกมีชีวิต</th>
+                                <th class="p-3 border">คงเหลือให้หย่านม</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in records %}
+                            {% if item.total_piglets > 0 and item.semen_id != "ส่งออก" %}
+                            <tr class="text-center {% cycle 'bg-gray-100' 'bg-white' %}">
+                                <td class="p-3 border">{{ forloop.counter }}</td>
+                                <td class="p-3 border">{{ item.record.delivery_date }}</td>
+                                <td class="p-3 border">{{ item.record.address_lock }}</td>
+                                <td class="p-3 border">{{ item.record.pig_id }}</td>
+                                <td class="p-3 border">{{ item.semen_id }}</td>
+                                <td class="p-3 border text-red-500">{{ item.record.dead_piglets }}</td>
+                                <td class="p-3 border text-yellow-500">{{ item.record.deformed_piglets }}</td>
+                                <td class="p-3 border text-green-500 font-semibold">{{ item.record.alive_piglets }}</td>
+                                <td class="p-3 border font-bold text-blue-700">{{ item.total_piglets }}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
 </body>
 </html>

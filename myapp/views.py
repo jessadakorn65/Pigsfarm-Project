@@ -470,3 +470,30 @@ def profile(request):
 
 # --------------------------------จบ------------------------------------------------
 
+from django.shortcuts import render
+from collections import defaultdict
+from .models import BreedingRecord
+from django.utils.dateformat import DateFormat
+
+def employee_dashboard(request):
+    records = BreedingRecord.objects.exclude(delivery_date__isnull=True).order_by('delivery_date')
+
+    grouped_records = defaultdict(list)
+
+    for record in records:
+        month_year = DateFormat(record.delivery_date).format('F Y')  # เช่น "March 2025"
+        total_piglets = record.alive_piglets + record.deformed_piglets
+
+        grouped_records[month_year].append({
+            'record': record,
+            'total_piglets': total_piglets,
+            'semen_id': record.semen_id
+        })
+
+    print(grouped_records)  # ลอง print ข้อมูลออกมาดู
+
+    context = {
+        'grouped_records': dict(grouped_records),
+    }
+
+    return render(request, 'myapp/employee_dashboard.html', context)
