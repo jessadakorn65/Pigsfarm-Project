@@ -237,9 +237,14 @@ from django.contrib import messages
 from .models import Pig, BreedingRecord
 from .forms import PigletRecordForm
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .models import Pig, BreedingRecord
+from .forms import PigletRecordForm
+
 def update_piglet_data(request, pig_id):
     pig = get_object_or_404(Pig, pig_id=pig_id)
-    latest_breeding_record = pig.breeding_records.order_by('-breeding_date').first()  # เอาประวัติการผสมล่าสุด
+    latest_breeding_record = pig.breeding_records.order_by('-breeding_date').first()
 
     if not latest_breeding_record:
         messages.error(request, "ไม่พบประวัติการผสมสำหรับหมูตัวนี้")
@@ -249,8 +254,7 @@ def update_piglet_data(request, pig_id):
         form = PigletRecordForm(request.POST, instance=latest_breeding_record)
         if form.is_valid():
             form.save()
-            # เมื่อบันทึกข้อมูลลูกสุกรแล้ว เปลี่ยนสถานะหมูเป็น 'คลอดแล้ว'
-            pig.status = 'delivered'
+            pig.status = 'delivered'  # อัปเดตสถานะหมูเป็น "คลอดแล้ว"
             pig.save()
             messages.success(request, "บันทึกข้อมูลลูกสุกรสำเร็จ!")
             return redirect('breeding_history', pig_id=pig.pig_id)
@@ -261,6 +265,8 @@ def update_piglet_data(request, pig_id):
         'pig': pig,
         'form': form,
     })
+
+
 
 
 # myapp/views.py
@@ -475,13 +481,39 @@ from collections import defaultdict
 from .models import BreedingRecord
 from django.utils.dateformat import DateFormat
 
+from django.shortcuts import render
+from collections import defaultdict
+from .models import BreedingRecord
+from django.utils.dateformat import DateFormat
+
+from django.utils.translation import gettext as _
+
 def employee_dashboard(request):
-    records = BreedingRecord.objects.exclude(delivery_date__isnull=True).order_by('delivery_date')
+    query = request.GET.get('q', '').strip()  # ค้นหาตาม pig_id
+    month_filter = request.GET.get('month', '').strip()  # ค้นหาตามเดือน (1-12)
+
+    records = BreedingRecord.objects.exclude(actual_date__isnull=True).order_by('actual_date')
+
+    if query:
+        records = records.filter(pig_id__icontains=query)  # ค้นหาตามรหัสแม่สุกร
+
+    if month_filter:
+        records = records.filter(actual_date__month=month_filter)  # ค้นหาตามเดือน
 
     grouped_records = defaultdict(list)
 
     for record in records:
-        month_year = DateFormat(record.delivery_date).format('F Y')  # เช่น "March 2025"
+        month_english = DateFormat(record.actual_date).format('F')  # "March"
+        month_thai = {
+            "January": "มกราคม", "February": "กุมภาพันธ์", "March": "มีนาคม",
+            "April": "เมษายน", "May": "พฤษภาคม", "June": "มิถุนายน",
+            "July": "กรกฎาคม", "August": "สิงหาคม", "September": "กันยายน",
+            "October": "ตุลาคม", "November": "พฤศจิกายน", "December": "ธันวาคม"
+        }.get(month_english, month_english)
+
+        year = DateFormat(record.actual_date).format('Y')  # "2025"
+        month_year = f"{month_thai} {year}"  # เช่น "มีนาคม 2025"
+
         total_piglets = record.alive_piglets + record.deformed_piglets
 
         grouped_records[month_year].append({
@@ -490,10 +522,75 @@ def employee_dashboard(request):
             'semen_id': record.semen_id
         })
 
-    print(grouped_records)  # ลอง print ข้อมูลออกมาดู
+    # ✅ เพิ่มตัวแปร months ที่ส่งไปยัง template
+    months = [
+        ('1', 'มกราคม'), ('2', 'กุมภาพันธ์'), ('3', 'มีนาคม'),
+        ('4', 'เมษายน'), ('5', 'พฤษภาคม'), ('6', 'มิถุนายน'),
+        ('7', 'กรกฎาคม'), ('8', 'สิงหาคม'), ('9', 'กันยายน'),
+        ('10', 'ตุลาคม'), ('11', 'พฤศจิกายน'), ('12', 'ธันวาคม')
+    ]
+
+    context = {
+        'grouped_records': dict(grouped_records),
+        'query': query,
+        'month_filter': month_filter,
+        'months': months  # ✅ ส่งไปยัง template
+    }
+
+    return render(request, 'myapp/employee_dashboard.html', context)
+
+
+
+
+
+from django.http import HttpResponse
+from weasyprint import HTML
+from django.template.loader import render_to_string
+from collections import defaultdict
+from django.utils.dateformat import DateFormat
+from myapp.models import BreedingRecord  # นำเข้าโมเดล BreedingRecord
+
+def download_pdf(request):
+    records = BreedingRecord.objects.exclude(actual_date__isnull=True).order_by('actual_date')
+
+    grouped_records = defaultdict(list)
+
+    for record in records:
+        month_english = DateFormat(record.actual_date).format('F')  # "March"
+        month_thai = {
+            "January": "มกราคม", "February": "กุมภาพันธ์", "March": "มีนาคม",
+            "April": "เมษายน", "May": "พฤษภาคม", "June": "มิถุนายน",
+            "July": "กรกฎาคม", "August": "สิงหาคม", "September": "กันยายน",
+            "October": "ตุลาคม", "November": "พฤศจิกายน", "December": "ธันวาคม"
+        }.get(month_english, month_english)
+
+        year = DateFormat(record.actual_date).format('Y')  # "2025"
+        month_year = f"{month_thai} {year}"  # เช่น "มีนาคม 2025"
+
+        total_piglets = record.alive_piglets + record.deformed_piglets
+
+        # เพิ่มเงื่อนไขให้ตรงกับ employee_dashboard
+        if total_piglets > 0 and record.semen_id != "ส่งออก":
+            grouped_records[month_year].append({
+                'record': record,
+                'total_piglets': total_piglets,
+                'semen_id': record.semen_id
+            })
 
     context = {
         'grouped_records': dict(grouped_records),
     }
 
-    return render(request, 'myapp/employee_dashboard.html', context)
+    html_string = render_to_string('myapp/pdf_template.html', context)
+    pdf_file = HTML(string=html_string).write_pdf()
+
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+    return response
+
+from django.shortcuts import render
+
+# ฟังก์ชันสำหรับหน้า Dashboard
+def dashboard(request):
+    # ถ้าต้องการข้อมูลเพิ่มเติมสามารถส่งไปยังหน้า HTML ได้ที่นี่
+    return render(request, 'myapp/dashboard.html')

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+    <!-- Sidebar -->
+    <aside class="w-64 h-screen bg-gray-800 p-6 fixed transition-all duration-300">
+        <div class="text-center mb-8">
+            <h5 class="text-lg text-white font-semibold">ระบบจัดการฟาร์มสุกร</h5>
+        </div>
+            <ul class="space-y-6 mt-6">
+                <li>
+                    <a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out flex items-center text-white hover:text-black">
+                        <i class="fa-solid fa-house text-lg"></i>
+                        <span class="ml-2">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'employee_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out flex items-center text-white hover:text-black">
+                        <i class="fa-solid fa-piggy-bank text-lg"></i>
+                        <span class="ml-2">สรุปเอกสารเเต่ละเดือน</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'dashboard' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out flex items-center text-white hover:text-black">
+                        <i class="fa-solid fa-chart-bar text-lg"></i>
+                        <span class="ml-2">กราฟ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out flex items-center text-white hover:text-black">
+                        <i class="fa-solid fa-sign-out-alt text-lg"></i>
+                        <span class="ml-2">ออกจากระบบ</span>
+                    </a>
+                </li>
+            </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ml-64 p-6">
+        <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">สรุปเอกสารรายเดือน</h1>
+
+            <!-- Accordion for Graphs -->
+            <div class="space-y-4">
+
+                <!-- Accordion Item 1: จำนวนลูกสุกรที่มีชีวิต -->
+                <div class="border-b border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
+                    <button class="w-full text-left p-4 text-2xl font-semibold text-gray-700 bg-gray-100 hover:bg-teal-500 focus:outline-none flex justify-between items-center" id="toggleChart1">
+                        <span>จำนวนลูกสุกรที่มีชีวิต</span>
+                        <i class="fa-solid fa-chevron-down text-xl"></i>
+                    </button>
+                    <div class="hidden p-4 bg-gray-50" id="chart1">
+                        <canvas id="alivePigletsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 2: จำนวนสุกรตายและพิการ -->
+                <div class="border-b border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
+                    <button class="w-full text-left p-4 text-2xl font-semibold text-gray-700 bg-gray-100 hover:bg-teal-500 focus:outline-none flex justify-between items-center" id="toggleChart2">
+                        <span>จำนวนสุกรตายและพิการ</span>
+                        <i class="fa-solid fa-chevron-down text-xl"></i>
+                    </button>
+                    <div class="hidden p-4 bg-gray-50" id="chart2">
+                        <canvas id="deadDeformedPigletsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 3: จำนวนลูกสุกรที่เหลือให้หย่านม -->
+                <div class="border-b border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
+                    <button class="w-full text-left p-4 text-2xl font-semibold text-gray-700 bg-gray-100 hover:bg-teal-500 focus:outline-none flex justify-between items-center" id="toggleChart3">
+                        <span>จำนวนลูกสุกรที่เหลือให้หย่านม</span>
+                        <i class="fa-solid fa-chevron-down text-xl"></i>
+                    </button>
+                    <div class="hidden p-4 bg-gray-50" id="chart3">
+                        <canvas id="weanedPigletsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 4: จำนวนลูกสุกรจากแต่ละแม่สุกร -->
+                <div class="border-b border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
+                    <button class="w-full text-left p-4 text-2xl font-semibold text-gray-700 bg-gray-100 hover:bg-teal-500 focus:outline-none flex justify-between items-center" id="toggleChart4">
+                        <span>จำนวนลูกสุกรจากแต่ละแม่สุกร</span>
+                        <i class="fa-solid fa-chevron-down text-xl"></i>
+                    </button>
+                    <div class="hidden p-4 bg-gray-50" id="chart4">
+                        <canvas id="pigletsByMotherChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Accordion Item 5: ยอดรวมสุกรทั้งหมดที่เกิดในแต่ละเดือน -->
+                <div class="border-b border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all">
+                    <button class="w-full text-left p-4 text-2xl font-semibold text-gray-700 bg-gray-100 hover:bg-teal-500 focus:outline-none flex justify-between items-center" id="toggleChart5">
+                        <span>ยอดรวมสุกรทั้งหมดที่เกิดในแต่ละเดือน</span>
+                        <i class="fa-solid fa-chevron-down text-xl"></i>
+                    </button>
+                    <div class="hidden p-4 bg-gray-50" id="chart5">
+                        <canvas id="totalPigletsChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Toggle accordion visibility
+        document.querySelectorAll('button[id^="toggleChart"]').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                const chart = document.getElementById(`chart${index + 1}`);
+                chart.classList.toggle('hidden');
+
+                // Toggle chevron icon
+                const icon = button.querySelector('i');
+                if (icon.classList.contains('fa-chevron-down')) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                } else {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
+        });
+
+        // กราฟที่ 1: จำนวนลูกสุกรที่มีชีวิต
+        const ctx1 = document.getElementById('alivePigletsChart').getContext('2d');
+        const alivePigletsChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม'],
+                datasets: [{
+                    label: 'จำนวนลูกสุกรที่มีชีวิต',
+                    data: [12, 19, 3],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // กราฟที่ 2: จำนวนสุกรตายและพิการ
+        const ctx2 = document.getElementById('deadDeformedPigletsChart').getContext('2d');
+        const deadDeformedPigletsChart = new Chart(ctx2, {
+            type: 'pie',
+            data: {
+                labels: ['สุกรที่ตาย', 'สุกรพิการ'],
+                datasets: [{
+                    data: [10, 5],
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(255, 159, 64, 1)'],
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // กราฟที่ 3: จำนวนลูกสุกรที่เหลือให้หย่านม
+        const ctx3 = document.getElementById('weanedPigletsChart').getContext('2d');
+        const weanedPigletsChart = new Chart(ctx3, {
+            type: 'line',
+            data: {
+                labels: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม'],
+                datasets: [{
+                    label: 'จำนวนลูกสุกรที่เหลือให้หย่านม',
+                    data: [8, 12, 10],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // กราฟที่ 4: จำนวนลูกสุกรจากแต่ละแม่สุกร
+        const ctx4 = document.getElementById('pigletsByMotherChart').getContext('2d');
+        const pigletsByMotherChart = new Chart(ctx4, {
+            type: 'bar',
+            data: {
+                labels: ['แม่สุกร 1', 'แม่สุกร 2', 'แม่สุกร 3'],
+                datasets: [{
+                    label: 'จำนวนลูกสุกร',
+                    data: [5, 8, 6],
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        // กราฟที่ 5: ยอดรวมสุกรทั้งหมดที่เกิดในแต่ละเดือน
+        const ctx5 = document.getElementById('totalPigletsChart').getContext('2d');
+        const totalPigletsChart = new Chart(ctx5, {
+            type: 'line',
+            data: {
+                labels: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม'],
+                datasets: [{
+                    label: 'ยอดรวมสุกรที่เกิด',
+                    data: [30, 50, 45],
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+    </script>
+
+</body>
+</html>

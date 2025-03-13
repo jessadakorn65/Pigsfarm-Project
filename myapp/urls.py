@@ -32,7 +32,8 @@ urlpatterns = [
     path('export_pig/<str:pig_id>/', views.export_pig, name='export_pig'),
     path('edit_profile/', views.edit_profile, name='edit_profile'),
     path('profile/', views.profile, name='profile'),  # URL สำหรับหน้าโปรไฟล์   
-
+    path('download_pdf/', views.download_pdf, name='download_pdf'),
+    path('dashboard/', views.dashboard, name='dashboard'),
 
 ]
 if settings.DEBUG:

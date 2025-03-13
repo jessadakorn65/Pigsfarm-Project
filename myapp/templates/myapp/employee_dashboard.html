@@ -17,16 +17,34 @@
         </div>
         <ul class="space-y-6 mt-6">
             <li><a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-house text-lg"></i><span class="ml-2">Dashboard</span></a></li>
-            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-piggy-bank text-lg"></i><span class="ml-2">เพิ่มข้อมูลสุกร</span></a></li>
-            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-list text-lg"></i><span class="ml-2">ดูรายการคิว</span></a></li>
+            <li><a href="{% url 'employee_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-piggy-bank text-lg"></i><span class="ml-2">สรุปเอกสารเเต่ละเดือน</span></a></li>
+            <li><a href="{% url 'dashboard' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-list text-lg"></i><span class="ml-2">กราฟ</span></a></li>
             <li><a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-sign-out-alt text-lg"></i><span class="ml-2">ออกจากระบบ</span></a></li>
         </ul>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 ml-64 p-6">
         <div class="max-w-6xl mx-auto bg-white text-black shadow-lg rounded-lg p-6">
-            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">ประวัติการคลอดลูกหมู</h1>
+            <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">สรุปเอกสารรายเดือน</h1>
+
+            <!-- Form เลือกเดือน -->
+            <form method="GET" class="mb-6">
+                <label class="text-gray-700 font-semibold">เลือกเดือน:</label>
+                <select name="month" class="border p-2 rounded">
+                    <option value="">-- ทุกเดือน --</option>
+                    {% for num, name in months %}
+                        <option value="{{ num }}" {% if num == month_filter %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-2">ค้นหา</button>
+            </form>
+
+            <!-- ปุ่มดาวน์โหลด PDF -->
+            <div class="flex justify-end mb-4">
+                <a href="{% url 'download_pdf' %}" class="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 flex items-center">
+                    <i class="fa-solid fa-download mr-2"></i> ดาวน์โหลด PDF
+                </a>
+            </div>
 
             {% for month, records in grouped_records.items %}
             <div class="mb-8">
@@ -37,7 +55,6 @@
                             <tr class="bg-blue-500 text-white">
                                 <th class="p-3 border">ลำดับ</th>
                                 <th class="p-3 border">วันที่คลอด</th>
-                                <th class="p-3 border">คอก</th>
                                 <th class="p-3 border">รหัสแม่สุกร</th>
                                 <th class="p-3 border">รหัสน้ำเชื้อ</th>
                                 <th class="p-3 border">ตาย</th>
@@ -51,8 +68,7 @@
                             {% if item.total_piglets > 0 and item.semen_id != "ส่งออก" %}
                             <tr class="text-center {% cycle 'bg-gray-100' 'bg-white' %}">
                                 <td class="p-3 border">{{ forloop.counter }}</td>
-                                <td class="p-3 border">{{ item.record.delivery_date }}</td>
-                                <td class="p-3 border">{{ item.record.address_lock }}</td>
+                                <td class="p-3 border">{{ item.record.actual_date }}</td>
                                 <td class="p-3 border">{{ item.record.pig_id }}</td>
                                 <td class="p-3 border">{{ item.semen_id }}</td>
                                 <td class="p-3 border text-red-500">{{ item.record.dead_piglets }}</td>

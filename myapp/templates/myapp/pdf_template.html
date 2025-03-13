@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>สรุปเอกสารรายเดือน</title>
+    <style>
+        body { font-family: "TH Sarabun New", sans-serif; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        .header { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">สรุปเอกสารเเต่ละเดือน</div>
+
+    {% for month, records in grouped_records.items %}
+    <h2>{{ month }}</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ลำดับ</th>
+                <th>วันที่คลอด</th>
+                <th>รหัสแม่สุกร</th>
+                <th>รหัสน้ำเชื้อ</th>
+                <th>ตาย</th>
+                <th>พิการ</th>
+                <th>ลูกมีชีวิต</th>
+                <th>คงเหลือให้หย่านม</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in records %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.record.actual_date }}</td>
+                <td>{{ item.record.pig_id }}</td>
+                <td>{{ item.semen_id }}</td>
+                <td>{{ item.record.dead_piglets }}</td>
+                <td>{{ item.record.deformed_piglets }}</td>
+                <td>{{ item.record.alive_piglets }}</td>
+                <td>{{ item.total_piglets }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+</body>
+</html>

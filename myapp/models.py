@@ -83,6 +83,8 @@ class BreedingRecord(models.Model):
     deformed_piglets = models.IntegerField(default=0)
     notes = models.TextField(blank=True, null=True)  # โน้ตเพิ่มเติม
     export_date = models.DateTimeField(null=True, blank=True)  # ✅ เพิ่มฟิลด์นี้
+    # ✅ ฟิลด์ใหม่สำหรับวันที่คลอดจริง
+    actual_date = models.DateField(blank=True, null=True)
     
 
 

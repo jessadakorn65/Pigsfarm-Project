@@ -73,21 +73,23 @@ from .models import BreedingRecord
 class PigletRecordForm(forms.ModelForm):
     class Meta:
         model = BreedingRecord
-        fields = ['delivery_date', 'birth_time', 'alive_piglets', 'dead_piglets', 'deformed_piglets']
+        fields = ['actual_date', 'birth_time', 'alive_piglets', 'dead_piglets', 'deformed_piglets']
         labels = {
-            'delivery_date': 'วันที่คลอด',
-            'birth_time': 'เวลาคลอด',
-            'alive_piglets': 'จำนวนหมูรอด',
-            'dead_piglets': 'จำนวนหมูตาย',
-            'deformed_piglets': 'จำนวนหมูพิการ',
+            'actual_date': '📅 วันที่คลอดจริง',
+            'birth_time': '⏰ เวลาคลอด',
+            'alive_piglets': '🐖 จำนวนหมูรอด',
+            'dead_piglets': '☠️ จำนวนหมูตาย',
+            'deformed_piglets': '⚠️ จำนวนหมูพิการ',
         }
         widgets = {
-            'delivery_date': forms.DateInput(attrs={'type': 'date', 'class': 'border rounded p-1'}),
-            'birth_time': forms.TimeInput(attrs={'type': 'time', 'class': 'border rounded p-1'}),
-            'alive_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
-            'dead_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
-            'deformed_piglets': forms.NumberInput(attrs={'class': 'border rounded p-1 w-16'}),
+            'actual_date': forms.DateInput(attrs={'type': 'date', 'class': 'border rounded p-2 w-full'}),
+            'birth_time': forms.TimeInput(attrs={'type': 'time', 'class': 'border rounded p-2 w-full'}),
+            'alive_piglets': forms.NumberInput(attrs={'class': 'border rounded p-2 w-full'}),
+            'dead_piglets': forms.NumberInput(attrs={'class': 'border rounded p-2 w-full'}),
+            'deformed_piglets': forms.NumberInput(attrs={'class': 'border rounded p-2 w-full'}),
         }
+
+
 
 # myapp/forms.py
 from django import forms
