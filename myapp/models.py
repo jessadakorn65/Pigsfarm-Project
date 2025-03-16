@@ -27,10 +27,6 @@ class CustomUser(AbstractUser):
 
 #-----------------------------------------------------------------------------------------------------------------
 # ตาราง pigs
-
-from django.db import models
-from datetime import timedelta
-
 from django.db import models
 from datetime import timedelta
 

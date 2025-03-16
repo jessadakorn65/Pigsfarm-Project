@@ -210,8 +210,6 @@ def add_to_queue(request, pig_id):
     return redirect('pig_queue')
 
 
-
-
 def remove_from_queue(request, queue_id):
     queue_item = get_object_or_404(PigQueue, id=queue_id)
     queue_item.delete()
@@ -237,10 +235,6 @@ from django.contrib import messages
 from .models import Pig, BreedingRecord
 from .forms import PigletRecordForm
 
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .models import Pig, BreedingRecord
-from .forms import PigletRecordForm
 
 def update_piglet_data(request, pig_id):
     pig = get_object_or_404(Pig, pig_id=pig_id)
@@ -475,12 +469,6 @@ def profile(request):
     return render(request, 'myapp/profile.html', {'user': user})
 
 # --------------------------------จบ------------------------------------------------
-
-from django.shortcuts import render
-from collections import defaultdict
-from .models import BreedingRecord
-from django.utils.dateformat import DateFormat
-
 from django.shortcuts import render
 from collections import defaultdict
 from .models import BreedingRecord
