@@ -2,7 +2,12 @@ from django import forms
 from .models import CustomUser
 from .models import Pig  # นำเข้าโมเดล Pig จาก models.py
 
-# ฟอร์มสร้างผู้ใช้ใหม่ที่ใช้ CustomUser model
+from django.contrib.auth.hashers import make_password  # นำเข้าเพื่อเข้ารหัสคำตอบลับ
+
+from django import forms
+from .models import CustomUser
+from django.contrib.auth.hashers import make_password  # นำเข้าเพื่อเข้ารหัสคำตอบลับ
+
 class CustomUserCreationForm(forms.ModelForm):
     # ฟิลด์สำหรับรหัสผ่านและยืนยันรหัสผ่าน
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
@@ -12,25 +17,33 @@ class CustomUserCreationForm(forms.ModelForm):
     id_card = forms.CharField(max_length=13, required=False, widget=forms.TextInput(attrs={'placeholder': 'เลขบัตรประชาชน'}))
     phone_number = forms.CharField(max_length=10, required=False, widget=forms.TextInput(attrs={'placeholder': 'เบอร์โทร'}))
 
-    # ฟิลด์รูปโปรไฟล์
-    profile_picture = forms.ImageField(required=False)  # เพิ่มฟิลด์สำหรับการอัปโหลดรูปภาพโปรไฟล์
+    # ✅ เพิ่มฟิลด์คำถามลับและคำตอบลับ
+    secret_question = forms.CharField(max_length=255, required=True, label="คำถามลับ", help_text="เช่น 'สัตว์เลี้ยงตัวแรกของคุณชื่ออะไร?'")
+    secret_answer = forms.CharField(widget=forms.PasswordInput, required=True, label="คำตอบลับ")
 
-    # Meta class สำหรับกำหนดฟิลด์ที่ต้องการจากโมเดล CustomUser
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'password', 'password_confirm', 'role', 'id_card', 'phone_number', 'profile_picture')
+        fields = ('username', 'email', 'password', 'password_confirm', 'role', 'id_card', 'phone_number', 'secret_question', 'secret_answer')
 
-    # ฟังก์ชัน clean สำหรับตรวจสอบข้อมูลที่กรอกเข้ามา
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         password_confirm = cleaned_data.get("password_confirm")
 
-        # ตรวจสอบว่ารหัสผ่านและรหัสผ่านยืนยันตรงกันหรือไม่
         if password and password_confirm and password != password_confirm:
             raise forms.ValidationError("Passwords do not match.")
         
         return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password"])  # ✅ เข้ารหัสรหัสผ่าน
+        user.secret_answer = make_password(self.cleaned_data["secret_answer"])  # ✅ เข้ารหัสคำตอบลับ
+        if commit:
+            user.save()
+        return user
+
+
 
     
 
@@ -109,5 +122,21 @@ from .models import CustomUser
 class CustomUserForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'profile_picture', 'role', 'id_card', 'phone_number']
+        fields = ['username', 'email', 'role', 'id_card', 'phone_number']
 
+
+class PasswordResetForm(forms.Form):
+    username = forms.CharField(max_length=150, label="Username")
+    secret_answer = forms.CharField(widget=forms.PasswordInput, label="Secret Answer")
+    new_password = forms.CharField(widget=forms.PasswordInput, label="New Password")
+    confirm_new_password = forms.CharField(widget=forms.PasswordInput, label="Confirm New Password")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_password = cleaned_data.get("new_password")
+        confirm_new_password = cleaned_data.get("confirm_new_password")
+
+        if new_password and confirm_new_password and new_password != confirm_new_password:
+            raise forms.ValidationError("New passwords do not match.")
+
+        return cleaned_data

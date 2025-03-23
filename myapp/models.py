@@ -17,8 +17,9 @@ class CustomUser(AbstractUser):
     # ฟิลด์เบอร์โทร
     phone_number = models.CharField(max_length=10, null=True, blank=True)
 
-    # ฟิลด์โปรไฟล์รูปภาพ
-    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)  # กำหนด path สำหรับเก็บภาพ
+        # คำถามลับและคำตอบสำหรับการรีเซ็ตรหัสผ่าน
+    secret_question = models.CharField(max_length=255, null=True, blank=True)
+    secret_answer = models.CharField(max_length=255, null=True, blank=True)
 
     # ฟังก์ชันแสดงบทบาทและข้อมูลผู้ใช้
     def __str__(self):

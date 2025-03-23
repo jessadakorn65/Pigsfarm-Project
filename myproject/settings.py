@@ -98,7 +98,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"  # เส้นทางที่ใช้เรียกใช้งานไฟล์ static ในเว็บ
-STATICFILES_DIRS = [BASE_DIR / "static"]
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

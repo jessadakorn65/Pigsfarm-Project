@@ -4,6 +4,8 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from .views import update_piglet_data
+from .views import password_reset
+
 
 # URL patterns สำหรับแอปพลิเคชัน
 urlpatterns = [
@@ -34,6 +36,8 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),  # URL สำหรับหน้าโปรไฟล์   
     path('download_pdf/', views.download_pdf, name='download_pdf'),
     path('dashboard/', views.dashboard, name='dashboard'),
+
+    path("password-reset/", password_reset, name="password_reset"),
 
 ]
 if settings.DEBUG:

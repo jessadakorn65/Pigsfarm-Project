@@ -1,58 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>สมัครสมาชิก</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-green-300 via-blue-400 to-purple-500 flex items-center justify-center">
-    <!-- Card Container -->
-    <div class="bg-white bg-opacity-90 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-96 transform transition duration-500 hover:scale-105">
-        <!-- Header -->
-        <div class="text-center mb-6">
-            <h2 class="text-3xl font-extrabold text-gray-800">Create Account</h2>
-            <p class="text-gray-500">Join us and get started!</p>
-        </div>
-        
-        <!-- Form -->
-        <form method="post" novalidate>
-            {% csrf_token %}
-            <!-- Form Fields -->
-            <div class="space-y-6">
-                {% for field in form %}
-                <div>
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.help_text %}
-                    <p class="mt-1 text-sm text-gray-500 italic">
-                        {{ field.help_text }}
-                    </p>
-                    {% endif %}
-                    {% for error in field.errors %}
-                    <p class="mt-1 text-sm text-red-500">
-                        {{ error }}
-                    </p>
-                    {% endfor %}
-                </div>
-                {% endfor %}
+<body class="min-h-screen bg-cover bg-center" style="background-image: url('https://cdn.pixabay.com/photo/2018/08/14/07/06/mountain-3604825_1280.jpg');">
+    <!-- Flexbox container to center the card -->
+    <div class="flex items-center justify-center min-h-screen">
+        <!-- Card Container with transparent background -->
+        <div class="bg-white bg-opacity-80 backdrop-blur-lg shadow-2xl rounded-2xl p-8 w-96 transform transition duration-500 hover:scale-105">
+            <!-- Header -->
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-extrabold text-gray-800">สร้างบัญชีผู้ใช้</h2>
+                <p class="text-gray-500">เข้าร่วมกับเราและเริ่มใช้งาน!</p>
             </div>
             
-            <!-- Submit Button -->
-            <button type="submit" 
-                class="mt-6 w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">
-                Register
-            </button>
-        </form>
-        
-        <!-- Footer -->
-        <p class="text-center mt-6 text-gray-600">
-            Already have an account? 
-            <a href="{% url 'login' %}" class="text-blue-500 font-medium hover:underline">
-                Login here
-            </a>
-        </p>
+            <!-- Form -->
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <!-- Form Fields -->
+                <div class="space-y-6">
+                    {% for field in form %}
+                    <div class="space-y-2">
+                        <label for="{{ field.id_for_label }}" class="text-sm font-medium text-gray-700">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <p class="mt-1 text-sm text-gray-500 italic">
+                            {{ field.help_text }}
+                        </p>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <p class="mt-1 text-sm text-red-500">
+                            {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" 
+                    class="mt-6 w-full bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold py-2 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">
+                    สมัครสมาชิก
+                </button>
+            </form>
+            
+            <!-- Footer -->
+            <p class="text-center mt-6 text-gray-600">
+                คุณมีบัญชีอยู่แล้ว? 
+                <a href="{% url 'login' %}" class="text-blue-500 font-medium hover:underline">
+                    เข้าสู่ระบบที่นี่
+                </a>
+            </p>
+        </div>
     </div>
 </body>
 </html>

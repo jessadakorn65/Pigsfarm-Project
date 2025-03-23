@@ -43,22 +43,22 @@ def home(request):
     return render(request, 'myapp/home.html')  # ยืนยันว่าเส้นทางไฟล์ถูกต้อง
 
 # ฟังก์ชันสมัครสมาชิกใหม่
+from django.contrib.auth.hashers import make_password
+
 def register(request):
     if request.method == 'POST':
-        # หากเป็นคำขอ POST ให้สร้างฟอร์มด้วยข้อมูลที่ได้รับ
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            # หากฟอร์มถูกต้อง ให้บันทึกผู้ใช้ใหม่
             user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])  # ตั้งรหัสผ่านเข้ารหัส
+            user.set_password(form.cleaned_data['password'])  # เข้ารหัสรหัสผ่าน
+            user.secret_answer = make_password(form.cleaned_data['secret_answer'])  # เข้ารหัสคำตอบลับ
             user.save()
-            return redirect('login')  # เปลี่ยนไปที่หน้าล็อกอินหลังจากสมัครสำเร็จ
+            return redirect('login')
     else:
-        # หากเป็นคำขอ GET ให้สร้างฟอร์มเปล่า
         form = CustomUserCreationForm()
 
-    # แสดงหน้าสมัครสมาชิก พร้อมส่งฟอร์มไปแสดงในเทมเพลต
     return render(request, 'myapp/register.html', {'form': form})
+
 
 # ฟังก์ชันแสดงหน้าเข้าสู่ระบบ (สำหรับหน้าเข้าสู่ระบบปกติ)
 def login_view(request):
@@ -582,3 +582,32 @@ from django.shortcuts import render
 def dashboard(request):
     # ถ้าต้องการข้อมูลเพิ่มเติมสามารถส่งไปยังหน้า HTML ได้ที่นี่
     return render(request, 'myapp/dashboard.html')
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import check_password, make_password
+from .models import CustomUser
+from .forms import PasswordResetForm
+
+def password_reset(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            secret_answer = form.cleaned_data["secret_answer"]
+            new_password = form.cleaned_data["new_password"]
+
+            try:
+                user = CustomUser.objects.get(username=username)
+                if user.secret_answer and check_password(secret_answer, user.secret_answer):  
+                    user.password = make_password(new_password)  # ตั้งรหัสผ่านใหม่
+                    user.save()
+                    return redirect("login")  # ส่งผู้ใช้ไปยังหน้าเข้าสู่ระบบหลังจากรีเซ็ตรหัสผ่านสำเร็จ
+                else:
+                    form.add_error(None, "Secret answer is incorrect.")
+            except CustomUser.DoesNotExist:
+                form.add_error("username", "Username not found.")
+
+    else:
+        form = PasswordResetForm()
+
+    return render(request, "myapp/password_reset.html", {"form": form})
