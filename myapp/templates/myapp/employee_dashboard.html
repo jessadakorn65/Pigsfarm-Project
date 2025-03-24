@@ -16,9 +16,8 @@
             <h5 class="text-lg text-white">ระบบจัดการฟาร์มสุกร</h5>
         </div>
         <ul class="space-y-6 mt-6">
-            <li><a href="#" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-house text-lg"></i><span class="ml-2">Dashboard</span></a></li>
+    
             <li><a href="{% url 'employee_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-piggy-bank text-lg"></i><span class="ml-2">สรุปเอกสารเเต่ละเดือน</span></a></li>
-            <li><a href="{% url 'dashboard' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-list text-lg"></i><span class="ml-2">กราฟ</span></a></li>
             <li><a href="{% url 'home' %}" class="block p-2 hover:bg-teal-500 rounded-lg transition ease-in-out"><i class="fa-solid fa-sign-out-alt text-lg"></i><span class="ml-2">ออกจากระบบ</span></a></li>
         </ul>
     </aside>
@@ -27,17 +26,40 @@
         <div class="max-w-6xl mx-auto bg-white text-black shadow-lg rounded-lg p-6">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">สรุปเอกสารรายเดือน</h1>
 
-            <!-- Form เลือกเดือน -->
-            <form method="GET" class="mb-6">
-                <label class="text-gray-700 font-semibold">เลือกเดือน:</label>
-                <select name="month" class="border p-2 rounded">
-                    <option value="">-- ทุกเดือน --</option>
-                    {% for num, name in months %}
-                        <option value="{{ num }}" {% if num == month_filter %}selected{% endif %}>{{ name }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 ml-2">ค้นหา</button>
+            <form method="get" class="flex space-x-4 items-center">
+            
+                <!-- ค้นหาตามเดือน -->
+                <div class="flex flex-col">
+                    <label for="month" class="text-lg font-semibold text-gray-700">เลือกเดือน</label>
+                    <select name="month" id="month"
+                            class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">เลือกเดือน</option>
+                        {% for value, month in months %}
+                            <option value="{{ value }}" {% if value == month_filter %}selected{% endif %}>{{ month }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+                <!-- ค้นหาตามปี -->
+                <div class="flex flex-col">
+                    <label for="year" class="text-lg font-semibold text-gray-700">เลือกปี</label>
+                    <select name="year" id="year"
+                            class="px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">เลือกปี</option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {% if year == year_filter %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            
+                <!-- ปุ่มค้นหา -->
+                <button type="submit"
+                        class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    ค้นหา
+                </button>
             </form>
+            
+
 
             <!-- ปุ่มดาวน์โหลด PDF -->
             <div class="flex justify-end mb-4">
@@ -83,7 +105,64 @@
                 </div>
             </div>
             {% endfor %}
+
+            <!-- กราฟแสดงข้อมูล -->
+            <div class="mt-8">
+                <canvas id="pigletsChart"></canvas>
+            </div>
+
         </div>
+        
     </main>
+
+    <script>
+        var ctx = document.getElementById('pigletsChart').getContext('2d');
+        var pigletsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels|safe }},  
+                datasets: [
+                    {
+                        label: 'ตาย',
+                        data: {{ chart_dead|safe }},
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'พิการ',
+                        data: {{ chart_deformed|safe }},
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'ลูกมีชีวิต',
+                        data: {{ chart_alive|safe }},
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'คงเหลือให้หย่านม',
+                        data: {{ chart_weaned|safe }},
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    
+
 </body>
 </html>

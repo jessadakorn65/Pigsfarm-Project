@@ -57,16 +57,18 @@
                             ส่งออกไปแล้ว
                         {% endif %}
                     </td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <a href="{% url 'update_piglet_data' pig.pig_id %}" 
-                           class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                            แก้ไข
-                        </a>
-                        <a href="{% url 'delete_breeding_record' record.id %}" 
-                           class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                            ลบ
-                        </a>
-                    </td>
+                    <td class="border border-gray-300 px-4 py-2 relative">
+    <details class="inline-block">
+        <summary class="bg-green-500 text-white px-3 py-1 rounded cursor-pointer hover:bg-green-600 inline-block">
+            ⋮ จัดการ
+        </summary>
+        <div class="absolute bg-white border rounded shadow-lg mt-1 right-0 w-24 z-10">
+            <a href="{% url 'update_piglet_data' pig.pig_id %}" class="block px-4 py-2 text-orange-600 hover:bg-gray-200">แก้ไข</a>
+            <a href="{% url 'delete_breeding_record' record.id %}" class="block px-4 py-2 text-red-600 hover:bg-gray-200">ลบ</a>
+        </div>
+    </details>
+</td>
+
                 </tr>
                 {% endfor %}
             </tbody>
@@ -103,26 +105,27 @@
         var alivePigletsData = [];
         var backgroundColors = [];  // อาเรย์สำหรับเก็บสี
         var borderColors = [];      // อาเรย์สำหรับเก็บสีขอบ
-
-        // ฟังก์ชันสำหรับสุ่มสี
-        function getRandomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
+    
+        // กำหนดสีที่ต้องการสำหรับพื้นหลังและขอบ
+        var backgroundColor = 'rgba(54, 162, 235, 0.2)'; // สีพื้นหลัง (น้ำเงินอ่อน)
+        var borderColor = 'rgba(54, 162, 235, 1)';       // สีขอบ (น้ำเงินเข้ม)
+    
+        var existingLabels = [];  // อาเรย์เก็บวันที่ที่เคยเจอแล้ว
+    
         {% for record in breeding_records %}
             {% if record.alive_piglets > 0 %}
-                labels.push("{{ record.breeding_date }}");
-                alivePigletsData.push({{ record.alive_piglets }});
-                backgroundColors.push(getRandomColor());  // กำหนดสีพื้นหลังแบบสุ่ม
-                borderColors.push(getRandomColor());      // กำหนดสีขอบแบบสุ่ม
+                var recordDate = "{{ record.breeding_date|date:'Y-m-d' }}";  // วันที่
+                // ตรวจสอบว่าเดือนและวันที่ซ้ำกันหรือไม่
+                if (!existingLabels.includes(recordDate)) {
+                    existingLabels.push(recordDate);  // เพิ่มวันที่ลงใน existingLabels
+                    labels.push(recordDate);          // เพิ่มวันที่ลงใน labels
+                    alivePigletsData.push({{ record.alive_piglets }});  // เพิ่มจำนวนลูกสุกรที่รอดชีวิต
+                    backgroundColors.push(backgroundColor);  // กำหนดสีพื้นหลัง
+                    borderColors.push(borderColor);          // กำหนดสีขอบ
+                }
             {% endif %}
         {% endfor %}
-
+    
         var ctx = document.getElementById('pigletChart').getContext('2d');
         new Chart(ctx, {
             type: 'bar',
@@ -155,6 +158,7 @@
             }
         });
     </script>
+    
 
     <div class="mt-8">
         <h3 class="text-xl font-bold mb-4 text-center">กราฟแสดงจำนวนลูกสุกรที่รอดชีวิตจากแต่ละรหัสน้ำเชื้อ</h3>

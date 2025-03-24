@@ -15,10 +15,6 @@
         <div class="text-center mb-8">
             <h5 class="text-lg text-white">ระบบจัดการฟาร์มสุกร</h5>
         </div>
-        <div class="search position-relative text-center px-4 py-3 mt-2">
-            <input type="text" class="form-control w-100 border-0 bg-transparent text-white" placeholder="Search here">
-            <i class="fa fa-search position-absolute text-white d-block fs-6" style="top: 22px; right: 10px;"></i>
-        </div>
         <ul class="space-y-4">
             <li><a href="{% url 'boss_dashboard' %}" class="block p-2 hover:bg-teal-500 rounded transition ease-in-out">
                 <i class="fa-solid fa-house text-lg hover:text-white"></i><span class="ml-2">Dashboard</span></a></li>
@@ -48,28 +44,33 @@
             <h1 class="text-3xl font-bold text-center text-white mb-8">รายการหมู</h1>
 
             <div class="text-right mb-4">
-                <button id="toggleFilter" class="text-blue-500 bg-blue-100 px-4 py-2 rounded-lg shadow hover:bg-blue-200 transition">
+                <button id="toggleFilter" class="text-black bg-gray-100 px-4 py-2 rounded-lg shadow hover:bg-gray-200 transition">
                     <i class="fa-solid fa-filter"></i> กรองข้อมูล
                 </button>
             </div>
-
+            
             <form id="filterForm" method="GET" action="{% url 'pig_list' %}" class="mb-6 grid grid-cols-2 gap-4 hidden">
-                <select name="status" class="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    <option value="">สถานะทั้งหมด</option>
-                    <option value="ready" {% if request.GET.status == "ready" %}selected{% endif %}>Ready for Breeding</option>
-                    <option value="waiting" {% if request.GET.status == "waiting" %}selected{% endif %}>Waiting for Delivery</option>
+                <select name="status" class="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-gray-400 bg-white text-black">
+                    <option value="">🔍 สถานะทั้งหมด</option>
+                    <option value="not_bred" {% if request.GET.status == "not_bred" %}selected{% endif %}> ยังไม่ผสม</option>
+                    <option value="ready" {% if request.GET.status == "ready" %}selected{% endif %}> พร้อมผสม</option>
+                    <option value="bred" {% if request.GET.status == "bred" %}selected{% endif %}> ผสมแล้ว</option>
+                    <option value="delivered" {% if request.GET.status == "delivered" %}selected{% endif %}> คลอดแล้ว</option>
                 </select>
-
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 col-span-2">กรองข้อมูล</button>
+                
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 col-span-2">
+                    <i class="fa-solid fa-filter"></i> กรองข้อมูล
+                </button>
+                
             </form>
-        </div>
-
-        <script>
-            document.getElementById("toggleFilter").addEventListener("click", function () {
-                const filterForm = document.getElementById("filterForm");
-                filterForm.classList.toggle("hidden");
-            });
-        </script>
+            
+            <script>
+                document.getElementById("toggleFilter").addEventListener("click", function () {
+                    const filterForm = document.getElementById("filterForm");
+                    filterForm.classList.toggle("hidden");
+                });
+            </script>
+            
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {% for pig in pigs %}

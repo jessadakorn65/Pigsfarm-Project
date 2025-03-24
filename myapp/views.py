@@ -361,13 +361,10 @@ def some_view(request):
 
 # --------------------------------dashboard --------------------------------
 from django.shortcuts import render 
-from django.db.models import Count, Sum
 from .models import Pig, PigQueue, BreedingRecord
-from django.db.models.functions import TruncMonth
-import json
+
 from datetime import date  # เพิ่มการใช้งาน date สำหรับการแสดงวันที่
 from django.db.models import Sum, F
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Sum
@@ -479,22 +476,31 @@ from django.utils.dateformat import DateFormat
 
 from django.utils.translation import gettext as _
 
+from collections import defaultdict
+import json
+from django.utils.dateformat import DateFormat
+from django.shortcuts import render
+from .models import BreedingRecord
+
 def employee_dashboard(request):
-    query = request.GET.get('q', '').strip()  # ค้นหาตาม pig_id
-    month_filter = request.GET.get('month', '').strip()  # ค้นหาตามเดือน (1-12)
+    query = request.GET.get('q', '').strip()  
+    month_filter = request.GET.get('month', '').strip()  
+    year_filter = request.GET.get('year', '').strip()  
 
     records = BreedingRecord.objects.exclude(actual_date__isnull=True).order_by('actual_date')
 
     if query:
-        records = records.filter(pig_id__icontains=query)  # ค้นหาตามรหัสแม่สุกร
-
+        records = records.filter(pig_id__icontains=query)  
     if month_filter:
-        records = records.filter(actual_date__month=month_filter)  # ค้นหาตามเดือน
+        records = records.filter(actual_date__month=month_filter)
+    if year_filter:
+        records = records.filter(actual_date__year=year_filter)
 
     grouped_records = defaultdict(list)
+    monthly_stats = defaultdict(lambda: {'dead': 0, 'deformed': 0, 'alive': 0, 'weaned': 0})
 
     for record in records:
-        month_english = DateFormat(record.actual_date).format('F')  # "March"
+        month_english = DateFormat(record.actual_date).format('F')  
         month_thai = {
             "January": "มกราคม", "February": "กุมภาพันธ์", "March": "มีนาคม",
             "April": "เมษายน", "May": "พฤษภาคม", "June": "มิถุนายน",
@@ -502,8 +508,8 @@ def employee_dashboard(request):
             "October": "ตุลาคม", "November": "พฤศจิกายน", "December": "ธันวาคม"
         }.get(month_english, month_english)
 
-        year = DateFormat(record.actual_date).format('Y')  # "2025"
-        month_year = f"{month_thai} {year}"  # เช่น "มีนาคม 2025"
+        year = DateFormat(record.actual_date).format('Y')  
+        month_year = f"{month_thai} {year}"  
 
         total_piglets = record.alive_piglets + record.deformed_piglets
 
@@ -513,24 +519,37 @@ def employee_dashboard(request):
             'semen_id': record.semen_id
         })
 
-    # ✅ เพิ่มตัวแปร months ที่ส่งไปยัง template
+        monthly_stats[month_year]['dead'] += record.dead_piglets
+        monthly_stats[month_year]['deformed'] += record.deformed_piglets
+        monthly_stats[month_year]['alive'] += record.alive_piglets
+        monthly_stats[month_year]['weaned'] += total_piglets  
+
     months = [
         ('1', 'มกราคม'), ('2', 'กุมภาพันธ์'), ('3', 'มีนาคม'),
         ('4', 'เมษายน'), ('5', 'พฤษภาคม'), ('6', 'มิถุนายน'),
         ('7', 'กรกฎาคม'), ('8', 'สิงหาคม'), ('9', 'กันยายน'),
         ('10', 'ตุลาคม'), ('11', 'พฤศจิกายน'), ('12', 'ธันวาคม')
     ]
+    
+    years = sorted(set(DateFormat(record.actual_date).format('Y') for record in records))
 
     context = {
         'grouped_records': dict(grouped_records),
         'query': query,
         'month_filter': month_filter,
-        'months': months  # ✅ ส่งไปยัง template
+        'months': months,
+        'year_filter': year_filter,
+        'years': years,
+
+        # ✅ ส่งข้อมูลกราฟไปยัง template
+        'chart_labels': json.dumps(list(monthly_stats.keys())),
+        'chart_dead': json.dumps([data['dead'] for data in monthly_stats.values()]),
+        'chart_deformed': json.dumps([data['deformed'] for data in monthly_stats.values()]),
+        'chart_alive': json.dumps([data['alive'] for data in monthly_stats.values()]),
+        'chart_weaned': json.dumps([data['weaned'] for data in monthly_stats.values()]),
     }
 
     return render(request, 'myapp/employee_dashboard.html', context)
-
-
 
 
 
