@@ -1,12 +1,9 @@
 from django import forms
 from .models import CustomUser
 from .models import Pig  # นำเข้าโมเดล Pig จาก models.py
-
 from django.contrib.auth.hashers import make_password  # นำเข้าเพื่อเข้ารหัสคำตอบลับ
 
-from django import forms
-from .models import CustomUser
-from django.contrib.auth.hashers import make_password  # นำเข้าเพื่อเข้ารหัสคำตอบลับ
+
 
 class CustomUserCreationForm(forms.ModelForm):
     # ฟิลด์สำหรับรหัสผ่านและยืนยันรหัสผ่าน

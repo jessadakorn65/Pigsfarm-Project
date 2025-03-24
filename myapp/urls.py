@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import update_piglet_data
 from .views import password_reset
-
+from .views import boss_dashboard, user_detail
 
 # URL patterns สำหรับแอปพลิเคชัน
 urlpatterns = [
@@ -13,7 +13,6 @@ urlpatterns = [
     path('login/', views.custom_login, name='login'),  # เส้นทางสำหรับเข้าสู่ระบบ (custom login)
     path('register/', views.register, name='register'),  # เส้นทางสำหรับสมัครสมาชิก
     path('boss_dashboard/', views.boss_dashboard, name='boss_dashboard'),  # เส้นทางสำหรับแดชบอร์ดเจ้านาย
-    path('boss_dashboard/', views.boss_dashboard, name='boss_dashboard'),
     path('employee_dashboard/', views.employee_dashboard, name='employee_dashboard'),  # เส้นทางสำหรับแดชบอร์ดพนักงาน
     path('pigs/', views.pig_list, name='pig_list'),
     path('add_pig/', views.add_pig, name='add_pig'),
@@ -38,7 +37,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
 
     path("password-reset/", password_reset, name="password_reset"),
-
+    path('user/<int:user_id>/', user_detail, name='user_detail'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

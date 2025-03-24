@@ -366,67 +366,63 @@ from .models import Pig, PigQueue, BreedingRecord
 from django.db.models.functions import TruncMonth
 import json
 from datetime import date  # เพิ่มการใช้งาน date สำหรับการแสดงวันที่
-
 from django.db.models import Sum, F
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncMonth
+from datetime import date
+import json
+from .models import Pig, PigQueue, BreedingRecord, CustomUser
 
 @login_required
 def boss_dashboard(request):
-    # ดึงจำนวนหมูทั้งหมด
-    total_pigs = Pig.objects.count()
+    # ตรวจสอบว่าผู้ใช้เป็น boss หรือไม่
+    if request.user.role != 'boss':
+        return redirect('employee_dashboard')
 
-    # ดึงจำนวนหมูในแต่ละสถานะ
+    # ดึงข้อมูลสถิติของหมู
+    total_pigs = Pig.objects.count()
     pigs_not_bred = Pig.objects.filter(status='not_bred').count()
     pigs_ready = Pig.objects.filter(status='ready').count()
     pigs_bred = Pig.objects.filter(status='bred').count()
     pigs_delivered = Pig.objects.filter(status='delivered').count()
-
-    # ดึงจำนวนหมูในคิว
     pigs_in_queue = PigQueue.objects.count()
 
-    # นับจำนวนลูกสุกรที่รอดชีวิตจากการคลอด
     total_alive_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_alive=Sum('alive_piglets'))['total_alive'] or 0
-
-    # นับจำนวนลูกสุกรที่ตาย
     total_dead_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_dead=Sum('dead_piglets'))['total_dead'] or 0
-
-    # นับจำนวนลูกสุกรที่พิการ
     total_deformed_piglets = BreedingRecord.objects.filter(pig__status='delivered').aggregate(total_deformed=Sum('deformed_piglets'))['total_deformed'] or 0
 
-    # คำนวณจำนวนลูกหมูที่คลอดจากแต่ละหมู
+    # คำนวณจำนวนลูกหมูที่คลอดจากแต่ละแม่หมู
     pigs_delivery_stats = Pig.objects.filter(status='delivered')\
                                       .annotate(total_piglets=Sum('breeding_records__alive_piglets'))\
                                       .values('pig_id', 'total_piglets')
-
-    # แปลงข้อมูลจำนวนลูกหมูที่คลอดเป็น JSON เพื่อใช้ในกราฟ
     pigs_delivery_stats_json = json.dumps(list(pigs_delivery_stats))
 
-    # ดึงข้อมูลการผสมหมูในแต่ละเดือน
+    # ดึงข้อมูลการผสมพันธุ์ในแต่ละเดือน
     breeding_stats = BreedingRecord.objects.annotate(month=TruncMonth('breeding_date')) \
                                            .values('month') \
                                            .annotate(count=Count('id')) \
                                            .order_by('month')
-
-    # แปลงวันที่ใน `breeding_stats` ให้เป็นสตริงก่อนส่งไปยังเทมเพลต
     for stat in breeding_stats:
         stat['month'] = stat['month'].strftime('%Y-%m')
-
-    # แปลงข้อมูลให้เป็น JSON
     breeding_stats_json = json.dumps(list(breeding_stats))
 
-    # ดึงหมูที่มีสถานะ 'delivered' หรือ 'คลอดแล้ว'
+    # ดึงข้อมูลแม่หมูที่คลอดแล้ว
     delivered_pigs = Pig.objects.filter(status='delivered')
-
-    # ดึงประวัติแม่หมูที่คลอดลูก พร้อมจำนวนลูกสุกรที่รอด
     delivered_pigs_records = BreedingRecord.objects.filter(pig__status='delivered') \
         .values('pig__pig_id', 'pig__name', 'delivery_date') \
         .annotate(total_alive_piglets=Sum('alive_piglets')) \
-        .order_by('-delivery_date')  # เรียงจากวันที่คลอดล่าสุด
+        .order_by('-delivery_date')
 
-    # ดึงข้อมูลของผู้ใช้และวันที่ปัจจุบัน
+    # ดึงข้อมูลผู้ใช้ทั้งหมด
+    users = CustomUser.objects.all()
+
+    # ดึงวันที่ปัจจุบัน
     today_date = date.today()
     user = request.user
 
-    # ส่งข้อมูลไปที่เทมเพลต
     return render(request, 'myapp/boss_dashboard.html', {
         'total_pigs': total_pigs,
         'pigs_not_bred': pigs_not_bred,
@@ -438,12 +434,19 @@ def boss_dashboard(request):
         'total_dead_piglets': total_dead_piglets,
         'total_deformed_piglets': total_deformed_piglets,
         'breeding_stats': breeding_stats_json,
-        'delivered_pigs': delivered_pigs,  # ส่งหมูที่มีสถานะ 'delivered'
-        'pigs_delivery_stats': pigs_delivery_stats_json,  # ส่งข้อมูลจำนวนลูกหมูที่คลอด
-        'delivered_pigs_records': delivered_pigs_records,  # ส่งข้อมูลไปยังเทมเพลต
-        'user': user,  # ส่งข้อมูลผู้ใช้ไปยังเทมเพลต
-        'today_date': today_date,  # ส่งวันที่ปัจจุบันไปยังเทมเพลต
+        'delivered_pigs': delivered_pigs,
+        'pigs_delivery_stats': pigs_delivery_stats_json,
+        'delivered_pigs_records': delivered_pigs_records,
+        'users': users,  # ส่งรายชื่อผู้ใช้ไปที่เทมเพลต
+        'user': user,
+        'today_date': today_date,
     })
+
+@login_required
+def user_detail(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    return render(request, 'myapp/user_detail.html', {'user': user})
+
 
 
 from django.shortcuts import render, redirect
